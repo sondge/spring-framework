@@ -16,8 +16,6 @@
 
 package org.springframework.context;
 
-import java.io.Closeable;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -25,6 +23,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ProtocolResolver;
 import org.springframework.lang.Nullable;
+
+import java.io.Closeable;
 
 /**
  * SPI interface to be implemented by most if not all application contexts.
@@ -58,7 +58,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @since 3.0
 	 * @see org.springframework.core.convert.ConversionService
 	 */
-	String CONVERSION_SERVICE_BEAN_NAME = "conversionService";
+	String CONVERSION_SERVICE_BEAN_NAME = "conversionService"; // 转换服务
 
 	/**
 	 * Name of the LoadTimeWeaver bean in the factory. If such a bean is supplied,
