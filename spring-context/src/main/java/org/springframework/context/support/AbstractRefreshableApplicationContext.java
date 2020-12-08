@@ -16,14 +16,14 @@
 
 package org.springframework.context.support;
 
-import java.io.IOException;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.lang.Nullable;
+
+import java.io.IOException;
 
 /**
  * Base class for {@link org.springframework.context.ApplicationContext}
@@ -86,7 +86,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * @param parent the parent context
 	 */
 	public AbstractRefreshableApplicationContext(@Nullable ApplicationContext parent) {
-		super(parent);
+		super(parent); // 继续执行AbstractRefreshableApplicationContext父类的构造方法
 	}
 
 
@@ -119,16 +119,16 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
-		if (hasBeanFactory()) {
-			destroyBeans();
-			closeBeanFactory();
+		if (hasBeanFactory()) {  // 判断原来是否有 bean 工厂
+			destroyBeans();  // 销毁 bean
+			closeBeanFactory();  // 关闭 bean 工厂
 		}
 		try {
-			DefaultListableBeanFactory beanFactory = createBeanFactory();
-			beanFactory.setSerializationId(getId());
-			customizeBeanFactory(beanFactory);
-			loadBeanDefinitions(beanFactory);
-			this.beanFactory = beanFactory;
+			DefaultListableBeanFactory beanFactory = createBeanFactory(); // 创建 bean 工厂
+			beanFactory.setSerializationId(getId()); // 设置序列化 id
+			customizeBeanFactory(beanFactory); // 加载定制 Bean 工厂
+			loadBeanDefinitions(beanFactory); // 加载用户自定义 bean
+			this.beanFactory = beanFactory;  // 配置工厂
 		}
 		catch (IOException ex) {
 			throw new ApplicationContextException("I/O error parsing bean definition source for " + getDisplayName(), ex);
@@ -163,7 +163,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 
 	@Override
 	public final ConfigurableListableBeanFactory getBeanFactory() {
-		DefaultListableBeanFactory beanFactory = this.beanFactory;
+		DefaultListableBeanFactory beanFactory = this.beanFactory; // 获取 Bean 工厂
 		if (beanFactory == null) {
 			throw new IllegalStateException("BeanFactory not initialized or already closed - " +
 					"call 'refresh' before accessing beans via the ApplicationContext");

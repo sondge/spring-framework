@@ -153,8 +153,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 
 	static {
-		// Eagerly load the ContextClosedEvent class to avoid weird classloader issues
-		// on application shutdown in WebLogic 8.1. (Reported by Dustin Woods.)
+		// Eagerly load the ContextClosedEvent class to avoid weird classloader issues 热加载 ContextCloseEvent 以避免一些问题
+		// on application shutdown in WebLogic 8.1. (Reported by Dustin Woods.)WebLogic 8.1中应用程序关闭时发生的故障。
 		ContextClosedEvent.class.getName();
 	}
 
@@ -226,7 +226,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Create a new AbstractApplicationContext with no parent.
 	 */
 	public AbstractApplicationContext() {
-		this.resourcePatternResolver = getResourcePatternResolver();
+		this.resourcePatternResolver = getResourcePatternResolver(); // 获取资源加载器
 	}
 
 	/**
@@ -516,9 +516,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.准备此上下文以进行刷新
-			prepareRefresh();
+			prepareRefresh();  // 准备加载 bean 的上下文
 
-			// Tell the subclass to refresh the internal bean factory.告诉子类刷新内部 bean 工厂
+			// Tell the subclass to refresh the internal bean factory. 告诉子类先刷新 Bean 工厂
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context. 准备 bean 工厂
@@ -549,7 +549,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// Instantiate all remaining (non-lazy-init) singletons.实例化所有剩余的（非延迟初始化）单例。
 				finishBeanFactoryInitialization(beanFactory);
 
-				// Last step: publish corresponding event.
+				// Last step: publish corresponding event. // 完成加载
 				finishRefresh();
 			}
 

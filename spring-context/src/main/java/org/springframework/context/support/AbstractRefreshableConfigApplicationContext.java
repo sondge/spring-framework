@@ -56,7 +56,7 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	 * @param parent the parent context
 	 */
 	public AbstractRefreshableConfigApplicationContext(@Nullable ApplicationContext parent) {
-		super(parent);
+		super(parent); // 继续执行AbstractRefreshableApplicationContext父类的构造方法
 	}
 
 
@@ -74,9 +74,9 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	 * <p>If not set, the implementation may use a default as appropriate.
 	 */
 	public void setConfigLocations(@Nullable String... locations) {
-		if (locations != null) {
+		if (locations != null) {  // 空校验
 			Assert.noNullElements(locations, "Config locations must not be null");
-			this.configLocations = new String[locations.length];
+			this.configLocations = new String[locations.length]; // 初始化数组，与配置的资源文件的多少
 			for (int i = 0; i < locations.length; i++) {
 				this.configLocations[i] = resolvePath(locations[i]).trim();
 			}
@@ -122,7 +122,7 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	 * @see org.springframework.core.env.Environment#resolveRequiredPlaceholders(String)
 	 */
 	protected String resolvePath(String path) {
-		return getEnvironment().resolveRequiredPlaceholders(path);
+		return getEnvironment().resolveRequiredPlaceholders(path); // 解决占位符
 	}
 
 
