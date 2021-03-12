@@ -34,6 +34,8 @@ package org.springframework.core.io;
  * @since 1.1.3
  * @see DefaultResourceLoader
  * @see org.springframework.context.support.FileSystemXmlApplicationContext
+ *
+ * 使用文件系统的完整路径或者少于资源路径
  */
 public class FileSystemResourceLoader extends DefaultResourceLoader {
 
@@ -45,9 +47,11 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 	 * @return the corresponding Resource handle
 	 * @see FileSystemResource
 	 * @see org.springframework.web.context.support.ServletContextResourceLoader#getResourceByPath
+	 * 通过完整路径获取资源
 	 */
 	@Override
 	protected Resource getResourceByPath(String path) {
+		// 如果路径是以 / 开头的目录从第二个字符开始返回
 		if (path.startsWith("/")) {
 			path = path.substring(1);
 		}

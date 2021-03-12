@@ -40,6 +40,8 @@ public interface WritableResource extends Resource {
 	 * that the resource content cannot be modified.
 	 * @see #getOutputStream()
 	 * @see #isReadable()
+	 *
+	 * 表明文件是否可写
 	 */
 	default boolean isWritable() {
 		return true;
@@ -50,6 +52,8 @@ public interface WritableResource extends Resource {
 	 * allowing to (over-)write its content.
 	 * @throws IOException if the stream could not be opened
 	 * @see #getInputStream()
+	 *
+	 * 返回资源的输出流
 	 */
 	OutputStream getOutputStream() throws IOException;
 
@@ -63,6 +67,8 @@ public interface WritableResource extends Resource {
 	 * @throws IOException if the content channel could not be opened
 	 * @since 5.0
 	 * @see #getOutputStream()
+	 *
+	 * 根据资源的输出流，返回 WritableByteChannel
 	 */
 	default WritableByteChannel writableChannel() throws IOException {
 		return Channels.newChannel(getOutputStream());

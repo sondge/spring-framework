@@ -432,6 +432,7 @@ public abstract class StringUtils {
 	 * @return a {@code String} with the replacements
 	 */
 	public static String replace(String inString, String oldPattern, @Nullable String newPattern) {
+		// 判断资源长度
 		if (!hasLength(inString) || !hasLength(oldPattern) || newPattern == null) {
 			return inString;
 		}
@@ -668,14 +669,19 @@ public abstract class StringUtils {
 	 * @return the full file path that results from applying the relative path
 	 */
 	public static String applyRelativePath(String path, String relativePath) {
+		// 获取最后一个文件分隔符的索引
 		int separatorIndex = path.lastIndexOf(FOLDER_SEPARATOR);
 		if (separatorIndex != -1) {
+			// 获取在当前的文件所在的目录
 			String newPath = path.substring(0, separatorIndex);
+			// 如果不是根目录开始的文件
 			if (!relativePath.startsWith(FOLDER_SEPARATOR)) {
+				// 当前文件的路径 + 当前路径
 				newPath += FOLDER_SEPARATOR;
 			}
 			return newPath + relativePath;
 		} else {
+			// 直接返回相对路径
 			return relativePath;
 		}
 	}
@@ -693,30 +699,37 @@ public abstract class StringUtils {
 	 * @return the normalized path
 	 */
 	public static String cleanPath(String path) {
+		// 判断路径是否为空，如果为空直接返回路径
 		if (!hasLength(path)) {
 			return path;
 		}
+		// 将windows 下分隔符替换为 统一的分隔符
 		String pathToUse = replace(path, WINDOWS_FOLDER_SEPARATOR, FOLDER_SEPARATOR); // 替换使用路径
 
 		// Shortcut if there is no work to do
+		// 没有要处理的路径，直接处理
 		if (pathToUse.indexOf('.') == -1) { //
 			return pathToUse;
 		}
 
-		// Strip prefix from path to analyze, to not treat it as part of the
-		// first path element. This is necessary to correctly parse paths like
+		// Strip prefix from path to analyze, to not treat it as part of the first path element. This is necessary to correctly parse paths like
 		// "file:core/../core/io/Resource.class", where the ".." should just
 		// strip the first "core" directory while keeping the "file:" prefix.
+		// 对文件路径进行处理，找出 : 的位置
 		int prefixIndex = pathToUse.indexOf(':');
 		String prefix = "";
 		if (prefixIndex != -1) {
+			// : 之前的字符串(包含 :)
 			prefix = pathToUse.substring(0, prefixIndex + 1);
+			// 如果被截取的字符串包含 ("/") 则将前缀返回为空
 			if (prefix.contains(FOLDER_SEPARATOR)) {
 				prefix = "";
 			} else {
+				// 获取之后的资源
 				pathToUse = pathToUse.substring(prefixIndex + 1);
 			}
 		}
+		// 如果路径有之前的处理
 		if (pathToUse.startsWith(FOLDER_SEPARATOR)) {
 			prefix = prefix + FOLDER_SEPARATOR;
 			pathToUse = pathToUse.substring(1);

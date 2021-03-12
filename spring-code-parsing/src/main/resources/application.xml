@@ -3,4 +3,11 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	<bean id="myTestBean" class="club.sondge.code.parsing.MyTestBean"/>
+	<bean id="courier" class="club.sondge.code.parsing.Courier">
+		<constructor-arg name="addr" value="A 地区"/>
+		<constructor-arg name="info" value="基本信息"/>
+	</bean>
+	<bean id="man" class="club.sondge.code.parsing.Man">
+		<property name="courier" ref="courier"/>
+	</bean>
 </beans>

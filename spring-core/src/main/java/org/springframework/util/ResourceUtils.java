@@ -16,6 +16,8 @@
 
 package org.springframework.util;
 
+import org.springframework.lang.Nullable;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
@@ -23,8 +25,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Utility methods for resolving resource locations to files in the
@@ -337,6 +337,8 @@ public abstract class ResourceUtils {
 	 * @throws MalformedURLException if no valid jar file URL could be extracted
 	 * @since 4.1.8
 	 * @see #extractJarFileURL(URL)
+	 *
+	 * 提取归档的 URL
 	 */
 	public static URL extractArchiveURL(URL jarUrl) throws MalformedURLException {
 		String urlFile = jarUrl.getFile();

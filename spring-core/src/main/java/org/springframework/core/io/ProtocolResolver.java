@@ -28,6 +28,8 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 4.3
  * @see DefaultResourceLoader#addProtocolResolver
+ *
+ * 不同协议的处理器, 使用 spi 允许用自定义协议来处理没有子类的加载实现
  */
 @FunctionalInterface
 public interface ProtocolResolver {

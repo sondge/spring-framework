@@ -38,10 +38,15 @@ import org.springframework.util.ResourceUtils;
  * @see org.springframework.core.io.support.ResourcePatternResolver
  * @see org.springframework.context.ApplicationContext
  * @see org.springframework.context.ResourceLoaderAware
+ *
+ * 加载资源的策略接口（classPath 或者文件系统）为 ApplicationContext 提供支持
+ *
+ * 资源加载器的使用在类加载的时候可以对  Bean 的配置信息进行加载
  */
 public interface ResourceLoader {
 
 	/** Pseudo URL prefix for loading from the class path: "classpath:". */
+	// 定义一个 伪 url 资源的前缀
 	String CLASSPATH_URL_PREFIX = ResourceUtils.CLASSPATH_URL_PREFIX;
 
 
@@ -63,6 +68,11 @@ public interface ResourceLoader {
 	 * @see #CLASSPATH_URL_PREFIX
 	 * @see Resource#exists()
 	 * @see Resource#getInputStream()
+	 *
+	 * 返回获取本地资源处理的文件描述，此处理需要具备以下处理能力:
+	 * 包含文件的绝对路径
+	 * 处理 classpath 的资源
+	 * 包含 WEB-INF 的资源
 	 */
 	Resource getResource(String location);
 
@@ -75,6 +85,8 @@ public interface ResourceLoader {
 	 * (only {@code null} if even the system ClassLoader isn't accessible)
 	 * @see org.springframework.util.ClassUtils#getDefaultClassLoader()
 	 * @see org.springframework.util.ClassUtils#forName(String, ClassLoader)
+	 *
+	 * 公开暴露出的所有资源，这里指的是统一的类资源加载，而不是返回线程的类加载
 	 */
 	@Nullable
 	ClassLoader getClassLoader();
