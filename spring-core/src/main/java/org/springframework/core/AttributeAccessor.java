@@ -22,6 +22,8 @@ import org.springframework.lang.Nullable;
  * Interface defining a generic contract for attaching and accessing metadata
  * to/from arbitrary objects.
  *
+ * 定义了一个随意的对象的配置属性
+ *
  * @author Rob Harrop
  * @since 2.0
  */
@@ -35,6 +37,7 @@ public interface AttributeAccessor {
 	 * class or package names as prefix.
 	 * @param name the unique attribute key
 	 * @param value the attribute value to be attached
+	 *  设置属性名称和值
 	 */
 	void setAttribute(String name, @Nullable Object value);
 
@@ -43,6 +46,7 @@ public interface AttributeAccessor {
 	 * Return {@code null} if the attribute doesn't exist.
 	 * @param name the unique attribute key
 	 * @return the current value of the attribute, if any
+	 * 根据属性名称回去属性值
 	 */
 	@Nullable
 	Object getAttribute(String name);
@@ -52,6 +56,8 @@ public interface AttributeAccessor {
 	 * Return {@code null} if no attribute under {@code name} is found.
 	 * @param name the unique attribute key
 	 * @return the last value of the attribute, if any
+	 *
+	 * 根据属性名称删除属性，会把属性返回出去
 	 */
 	@Nullable
 	Object removeAttribute(String name);
@@ -60,11 +66,15 @@ public interface AttributeAccessor {
 	 * Return {@code true} if the attribute identified by {@code name} exists.
 	 * Otherwise return {@code false}.
 	 * @param name the unique attribute key
+	 *
+	 *     是否包含这个属性
 	 */
 	boolean hasAttribute(String name);
 
 	/**
 	 * Return the names of all attributes.
+	 *
+	 * 查找全部的属性名称
 	 */
 	String[] attributeNames();
 

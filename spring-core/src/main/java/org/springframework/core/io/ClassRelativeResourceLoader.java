@@ -27,15 +27,19 @@ import org.springframework.util.StringUtils;
  * @since 3.0
  * @see Class#getResource(String)
  * @see ClassPathResource#ClassPathResource(String, Class)
+ *
+ * 相对与给定的解释了纯资源路径
  */
 public class ClassRelativeResourceLoader extends DefaultResourceLoader {
-
+	// 定义一个类
 	private final Class<?> clazz;
 
 
 	/**
 	 * Create a new ClassRelativeResourceLoader for the given class.
 	 * @param clazz the class to load resources through
+	 *
+	 * 从指定的类中创建一个新的 ClassRelativeResourceLoader
 	 */
 	public ClassRelativeResourceLoader(Class<?> clazz) {
 		Assert.notNull(clazz, "Class must not be null");
@@ -44,6 +48,7 @@ public class ClassRelativeResourceLoader extends DefaultResourceLoader {
 	}
 
 	@Override
+	// 从路径中获取一个 ClassRelativeContextResource
 	protected Resource getResourceByPath(String path) {
 		return new ClassRelativeContextResource(path, this.clazz);
 	}
@@ -55,19 +60,22 @@ public class ClassRelativeResourceLoader extends DefaultResourceLoader {
 	 */
 	private static class ClassRelativeContextResource extends ClassPathResource implements ContextResource {
 
+		// 定义一个类变量
 		private final Class<?> clazz;
-
+		// 从获取类变量中 ClassRelativeContextResource
 		public ClassRelativeContextResource(String path, Class<?> clazz) {
 			super(path, clazz);
 			this.clazz = clazz;
 		}
 
 		@Override
+		// 返回上下文路径
 		public String getPathWithinContext() {
 			return getPath();
 		}
 
 		@Override
+		// 从一个相对路径上创建一个新的 ClassRelativeContextResource
 		public Resource createRelative(String relativePath) {
 			String pathToUse = StringUtils.applyRelativePath(getPath(), relativePath);
 			return new ClassRelativeContextResource(pathToUse, this.clazz);

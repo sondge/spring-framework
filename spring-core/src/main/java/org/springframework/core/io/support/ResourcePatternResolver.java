@@ -16,10 +16,10 @@
 
 package org.springframework.core.io.support;
 
-import java.io.IOException;
-
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+
+import java.io.IOException;
 
 /**
  * Strategy interface for resolving a location pattern (for example,
@@ -50,6 +50,9 @@ import org.springframework.core.io.ResourceLoader;
  * @see org.springframework.core.io.ResourceLoader
  * @see org.springframework.context.ApplicationContext
  * @see org.springframework.context.ResourceLoaderAware
+ *
+ * // 继承自 ResourceLoader, 可以返回多个 Resource 实例
+ * 处理以 classpath*: 开头，可以匹配路径，返回都一个实例。使用 jar 包，或者类文件可以包含多个文件。
  */
 public interface ResourcePatternResolver extends ResourceLoader {
 
@@ -59,6 +62,7 @@ public interface ResourcePatternResolver extends ResourceLoader {
 	 * retrieves all matching resources for a given name (e.g. "/beans.xml"),
 	 * for example in the root of all deployed JAR files.
 	 * @see org.springframework.core.io.ResourceLoader#CLASSPATH_URL_PREFIX
+	 * classpath 解析路径
 	 */
 	String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
 
@@ -70,6 +74,8 @@ public interface ResourcePatternResolver extends ResourceLoader {
 	 * @param locationPattern the location pattern to resolve
 	 * @return the corresponding Resource objects
 	 * @throws IOException in case of I/O errors
+	 *
+	 * 根据匹配可以返回多个 Resouce 资源
 	 */
 	Resource[] getResources(String locationPattern) throws IOException;
 

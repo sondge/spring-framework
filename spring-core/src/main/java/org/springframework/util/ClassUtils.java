@@ -16,6 +16,8 @@
 
 package org.springframework.util;
 
+import org.springframework.lang.Nullable;
+
 import java.beans.Introspector;
 import java.io.Closeable;
 import java.io.Externalizable;
@@ -39,8 +41,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Miscellaneous {@code java.lang.Class} utility methods.
@@ -1195,17 +1195,22 @@ public abstract class ClassUtils {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		int count = 0;
+		// 获取全部的方法
 		Method[] declaredMethods = clazz.getDeclaredMethods();
+		// 如果方法名称，等于这个方法，则对 count 进行加价
 		for (Method method : declaredMethods) {
 			if (methodName.equals(method.getName())) {
 				count++;
 			}
 		}
+		// 获取对应的接口
 		Class<?>[] ifcs = clazz.getInterfaces();
 		for (Class<?> ifc : ifcs) {
+			// 获取加载的数量
 			count += getMethodCountForName(ifc, methodName);
 		}
 		if (clazz.getSuperclass() != null) {
+			// 如果父类的方法不为空，则对 getMethodCountForName
 			count += getMethodCountForName(clazz.getSuperclass(), methodName);
 		}
 		return count;

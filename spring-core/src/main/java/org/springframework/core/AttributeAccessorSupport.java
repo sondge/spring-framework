@@ -16,13 +16,13 @@
 
 package org.springframework.core;
 
-import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Support class for {@link AttributeAccessor AttributeAccessors}, providing
@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
  * @since 2.0
  */
 @SuppressWarnings("serial")
+// 属性存储器
 public abstract class AttributeAccessorSupport implements AttributeAccessor, Serializable {
 
 	/** Map with String keys and Object values. */
@@ -42,6 +43,7 @@ public abstract class AttributeAccessorSupport implements AttributeAccessor, Ser
 
 
 	@Override
+	// 设置属性名称和属性值
 	public void setAttribute(String name, @Nullable Object value) {
 		Assert.notNull(name, "Name must not be null");
 		if (value != null) {
@@ -54,6 +56,7 @@ public abstract class AttributeAccessorSupport implements AttributeAccessor, Ser
 
 	@Override
 	@Nullable
+	// 根据属性名获取属性
 	public Object getAttribute(String name) {
 		Assert.notNull(name, "Name must not be null");
 		return this.attributes.get(name);
@@ -61,18 +64,21 @@ public abstract class AttributeAccessorSupport implements AttributeAccessor, Ser
 
 	@Override
 	@Nullable
+	// 删除属性
 	public Object removeAttribute(String name) {
 		Assert.notNull(name, "Name must not be null");
 		return this.attributes.remove(name);
 	}
 
 	@Override
+	// 是否有属性
 	public boolean hasAttribute(String name) {
 		Assert.notNull(name, "Name must not be null");
 		return this.attributes.containsKey(name);
 	}
 
 	@Override
+	// 获取全部的属性名称数组
 	public String[] attributeNames() {
 		return StringUtils.toStringArray(this.attributes.keySet());
 	}
@@ -81,6 +87,7 @@ public abstract class AttributeAccessorSupport implements AttributeAccessor, Ser
 	/**
 	 * Copy the attributes from the supplied AttributeAccessor to this accessor.
 	 * @param source the AttributeAccessor to copy from
+	 * 从属性中拷贝属性
 	 */
 	protected void copyAttributesFrom(AttributeAccessor source) {
 		Assert.notNull(source, "Source must not be null");
