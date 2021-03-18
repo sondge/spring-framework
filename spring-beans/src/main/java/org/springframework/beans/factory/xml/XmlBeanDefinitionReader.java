@@ -73,58 +73,72 @@ import java.util.Set;
  * @see org.springframework.beans.factory.support.DefaultListableBeanFactory
  * @see org.springframework.context.support.GenericApplicationContext
  * @since 26.11.2003
+ * <p>
+ * 从 Xml 中获取的  BeanDefinition
  */
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Indicates that the validation should be disabled.
+	 * 禁用 XML 文件的验证
 	 */
 	public static final int VALIDATION_NONE = XmlValidationModeDetector.VALIDATION_NONE;
 
 	/**
 	 * Indicates that the validation mode should be detected automatically.
+	 * 自动获取验证模式
 	 */
 	public static final int VALIDATION_AUTO = XmlValidationModeDetector.VALIDATION_AUTO;
 
 	/**
 	 * Indicates that DTD validation should be used.
+	 * <p>
+	 * 采用 DTD 的验证模式
 	 */
 	public static final int VALIDATION_DTD = XmlValidationModeDetector.VALIDATION_DTD;
 
 	/**
 	 * Indicates that XSD validation should be used.
+	 * <p>
+	 * 采用 XSD 验证模式
 	 */
 	public static final int VALIDATION_XSD = XmlValidationModeDetector.VALIDATION_XSD;
 
 
 	/**
 	 * Constants instance for this class.
+	 * 定义本类的常量
 	 */
 	private static final Constants constants = new Constants(XmlBeanDefinitionReader.class);
 
+	// 默认为自动获取验证模式
 	private int validationMode = VALIDATION_AUTO;
 
+	// TODO 作用
 	private boolean namespaceAware = false;
 
+	// 定义DefaultBeanDefinitionDocumentReader Class 对象
 	private Class<? extends BeanDefinitionDocumentReader> documentReaderClass =
 			DefaultBeanDefinitionDocumentReader.class;
-
+	// 定义问题记录器
 	private ProblemReporter problemReporter = new FailFastProblemReporter();
-
+	// 定义读取监听器
 	private ReaderEventListener eventListener = new EmptyReaderEventListener();
-
+	// 定义资源提取器
 	private SourceExtractor sourceExtractor = new NullSourceExtractor();
 
 	@Nullable
+	// 定义  NamespaceHandler 解析器
 	private NamespaceHandlerResolver namespaceHandlerResolver;
-
+	// 定义文档加载器
 	private DocumentLoader documentLoader = new DefaultDocumentLoader();
 
 	@Nullable
+	// 实体解析器
 	private EntityResolver entityResolver;
-
+	// 错误处理器
 	private ErrorHandler errorHandler = new SimpleSaxErrorHandler(logger);
-
+	// Xml校验模式探测器
 	private final XmlValidationModeDetector validationModeDetector = new XmlValidationModeDetector();
 
 	// 当前线程正在加载的资源
@@ -142,6 +156,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 *
 	 * @param registry the BeanFactory to load bean definitions into,
 	 *                 in the form of a BeanDefinitionRegistry
+	 *                 <p>
+	 *                 为给定的 BeanFactory 创建一个  XmlBeanDefinitionReader
 	 */
 	public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
 		super(registry);
@@ -155,6 +171,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 *
 	 * @see #setValidationMode
 	 * @see #setNamespaceAware
+	 * <p>
+	 * 是否增加校验方式
 	 */
 	public void setValidating(boolean validating) {
 		this.validationMode = (validating ? VALIDATION_AUTO : VALIDATION_NONE);
@@ -165,6 +183,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Set the validation mode to use by name. Defaults to {@link #VALIDATION_AUTO}.
 	 *
 	 * @see #setValidationMode
+	 * <p>
+	 * 设置校验模式的名称
 	 */
 	public void setValidationModeName(String validationModeName) {
 		setValidationMode(constants.asNumber(validationModeName).intValue());
@@ -175,6 +195,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * <p>Note that this only activates or deactivates validation itself.
 	 * If you are switching validation off for schema files, you might need to
 	 * activate schema namespace support explicitly: see {@link #setNamespaceAware}.
+	 * <p>
+	 * 设置资源模式
 	 */
 	public void setValidationMode(int validationMode) {
 		this.validationMode = validationMode;
@@ -182,6 +204,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Return the validation mode to use.
+	 * 获取资源模式
 	 */
 	public int getValidationMode() {
 		return this.validationMode;
@@ -193,6 +216,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * <p>This is typically not needed when schema validation is active.
 	 * However, without validation, this has to be switched to "true"
 	 * in order to properly process schema namespaces.
+	 * <p>
+	 * 设置是否给 XML 命名空间做解析
 	 */
 	public void setNamespaceAware(boolean namespaceAware) {
 		this.namespaceAware = namespaceAware;
@@ -200,6 +225,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Return whether or not the XML parser should be XML namespace aware.
+	 * <p>
+	 * 返回是否根据 XML 命名空间做解析
 	 */
 	public boolean isNamespaceAware() {
 		return this.namespaceAware;
@@ -210,6 +237,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * <p>The default implementation is {@link org.springframework.beans.factory.parsing.FailFastProblemReporter}
 	 * which exhibits fail fast behaviour. External tools can provide an alternative implementation
 	 * that collates errors and warnings for display in the tool UI.
+	 * <p>
+	 * 设置 ProblemReporter
 	 */
 	public void setProblemReporter(@Nullable ProblemReporter problemReporter) {
 		this.problemReporter = (problemReporter != null ? problemReporter : new FailFastProblemReporter());
@@ -220,6 +249,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * <p>The default implementation is EmptyReaderEventListener which discards every event notification.
 	 * External tools can provide an alternative implementation to monitor the components being
 	 * registered in the BeanFactory.
+	 * <p>
+	 * 设置事件监听器
 	 */
 	public void setEventListener(@Nullable ReaderEventListener eventListener) {
 		this.eventListener = (eventListener != null ? eventListener : new EmptyReaderEventListener());
@@ -230,6 +261,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * <p>The default implementation is {@link NullSourceExtractor} which simply returns {@code null}
 	 * as the source object. This means that - during normal runtime execution -
 	 * no additional source metadata is attached to the bean configuration metadata.
+	 * <p>
+	 * 设置资源提取器
 	 */
 	public void setSourceExtractor(@Nullable SourceExtractor sourceExtractor) {
 		this.sourceExtractor = (sourceExtractor != null ? sourceExtractor : new NullSourceExtractor());
@@ -239,6 +272,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Specify the {@link NamespaceHandlerResolver} to use.
 	 * <p>If none is specified, a default instance will be created through
 	 * {@link #createDefaultNamespaceHandlerResolver()}.
+	 * <p>
+	 * 设置命名空间处理器
 	 */
 	public void setNamespaceHandlerResolver(@Nullable NamespaceHandlerResolver namespaceHandlerResolver) {
 		this.namespaceHandlerResolver = namespaceHandlerResolver;
@@ -248,6 +283,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Specify the {@link DocumentLoader} to use.
 	 * <p>The default implementation is {@link DefaultDocumentLoader}
 	 * which loads {@link Document} instances using JAXP.
+	 * 设置文档加载器
 	 */
 	public void setDocumentLoader(@Nullable DocumentLoader documentLoader) {
 		this.documentLoader = (documentLoader != null ? documentLoader : new DefaultDocumentLoader());
@@ -257,6 +293,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Set a SAX entity resolver to be used for parsing.
 	 * <p>By default, {@link ResourceEntityResolver} will be used. Can be overridden
 	 * for custom entity resolution, for example relative to some specific base path.
+	 * <p>
+	 * 设置实体解析器
 	 */
 	public void setEntityResolver(@Nullable EntityResolver entityResolver) {
 		this.entityResolver = entityResolver;
@@ -265,6 +303,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	/**
 	 * Return the EntityResolver to use, building a default resolver
 	 * if none specified.
+	 * <p>
+	 * 获取实体解析器，如果资源解析器为空返回DelegatingEntityResolver，否则返回 ResourceEntityResolver
 	 */
 	protected EntityResolver getEntityResolver() {
 		if (this.entityResolver == null) {
@@ -287,6 +327,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * and rethrows errors to discontinue the XML transformation.
 	 *
 	 * @see SimpleSaxErrorHandler
+	 * <p>
+	 * 设置错误处理器
 	 */
 	public void setErrorHandler(ErrorHandler errorHandler) {
 		this.errorHandler = errorHandler;
@@ -298,6 +340,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * <p>The default is {@link DefaultBeanDefinitionDocumentReader}.
 	 *
 	 * @param documentReaderClass the desired BeanDefinitionDocumentReader implementation class
+	 *                            <p>
+	 *                            设置  DocumentReaderClass
 	 */
 	public void setDocumentReaderClass(Class<? extends BeanDefinitionDocumentReader> documentReaderClass) {
 		this.documentReaderClass = documentReaderClass;
@@ -310,6 +354,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @param resource the resource descriptor for the XML file
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
+	 *
+	 *                                      <p>
+	 *                                      加载 XML 文件的  BeanDefinition
 	 */
 	@Override
 	public int loadBeanDefinitions(Resource resource) throws BeanDefinitionStoreException {
@@ -455,19 +502,27 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * mode, even when something other than {@link #VALIDATION_AUTO} was set.
 	 *
 	 * @see #detectValidationMode
+	 * <p>
+	 * 获取验证模式从资源中
 	 */
 	protected int getValidationModeForResource(Resource resource) {
+		// 获取资源模式
 		int validationModeToUse = getValidationMode();
+		// 如果不为自动识别的验证模式，直接返回验证模式
 		if (validationModeToUse != VALIDATION_AUTO) {
 			return validationModeToUse;
 		}
+
+		// 从 Resource 中获取资源的校验方式
 		int detectedMode = detectValidationMode(resource);
+		// 如果获取的资源方式不为 自动检测的验证模式
 		if (detectedMode != VALIDATION_AUTO) {
 			return detectedMode;
 		}
 		// Hmm, we didn't get a clear indication... Let's assume XSD,
 		// since apparently no DTD declaration has been found up until
 		// detection stopped (before finding the document's root tag).
+		// 默认返回为 XSD 的方式解析
 		return VALIDATION_XSD;
 	}
 
@@ -477,8 +532,11 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * definition then DTD validation is used otherwise XSD validation is assumed.
 	 * <p>Override this method if you would like to customize resolution
 	 * of the {@link #VALIDATION_AUTO} mode.
+	 * <p>
+	 * 从资源中探测 Resource 的验证模式
 	 */
 	protected int detectValidationMode(Resource resource) {
+		// 如果文件是已经打开的 抛出 BeanDefinitionStoreException
 		if (resource.isOpen()) {
 			throw new BeanDefinitionStoreException(
 					"Passed-in Resource [" + resource + "] contains an open stream: " +
@@ -486,9 +544,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 							"that is able to create fresh streams, or explicitly specify the validationMode " +
 							"on your XmlBeanDefinitionReader instance.");
 		}
-
+		// 定义输入流
 		InputStream inputStream;
 		try {
+			// 获取资源的输入流
 			inputStream = resource.getInputStream();
 		} catch (IOException ex) {
 			throw new BeanDefinitionStoreException(
@@ -498,6 +557,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		}
 
 		try {
+			// 从验证模式探测器中他侧验证模式
 			return this.validationModeDetector.detectValidationMode(inputStream);
 		} catch (IOException ex) {
 			throw new BeanDefinitionStoreException("Unable to determine validation mode for [" +
@@ -535,6 +595,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * <p>The default implementation instantiates the specified "documentReaderClass".
 	 *
 	 * @see #setDocumentReaderClass
+	 * <p>
+	 * 设置 BeanDefinitionDocumentReader 读取器
 	 */
 	protected BeanDefinitionDocumentReader createBeanDefinitionDocumentReader() {
 		return BeanUtils.instantiateClass(this.documentReaderClass);
@@ -542,6 +604,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Create the {@link XmlReaderContext} to pass over to the document reader.
+	 * <p>
+	 * 从资源中获取 XmlReaderContext
 	 */
 	public XmlReaderContext createReaderContext(Resource resource) {
 		return new XmlReaderContext(resource, this.problemReporter, this.eventListener,
@@ -550,11 +614,15 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Lazily create a default NamespaceHandlerResolver, if not set before.
+	 * <p>
+	 * 获取命名空间处理器
 	 *
 	 * @see #createDefaultNamespaceHandlerResolver()
 	 */
 	public NamespaceHandlerResolver getNamespaceHandlerResolver() {
+		// 如果为空的 namespaceHandlerResolver
 		if (this.namespaceHandlerResolver == null) {
+			// 创建一个默认的 namespaceHandler 解析器
 			this.namespaceHandlerResolver = createDefaultNamespaceHandlerResolver();
 		}
 		return this.namespaceHandlerResolver;
@@ -565,6 +633,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * <p>The default implementation returns an instance of {@link DefaultNamespaceHandlerResolver}.
 	 *
 	 * @see DefaultNamespaceHandlerResolver#DefaultNamespaceHandlerResolver(ClassLoader)
+	 * <p>
+	 * 从 ClassLoader NamespaceHandlerResolver 处理器
 	 */
 	protected NamespaceHandlerResolver createDefaultNamespaceHandlerResolver() {
 		ClassLoader cl = (getResourceLoader() != null ? getResourceLoader().getClassLoader() : getBeanClassLoader());

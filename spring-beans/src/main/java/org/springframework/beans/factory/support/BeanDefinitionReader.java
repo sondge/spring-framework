@@ -34,8 +34,10 @@ import org.springframework.lang.Nullable;
  * readers that want to follow standard naming conventions.
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see org.springframework.core.io.Resource
+ * <p>
+ * BeanDefinition 中的读取器
+ * @since 1.1
  */
 public interface BeanDefinitionReader {
 
@@ -43,6 +45,8 @@ public interface BeanDefinitionReader {
 	 * Return the bean factory to register the bean definitions with.
 	 * <p>The factory is exposed through the BeanDefinitionRegistry interface,
 	 * encapsulating the methods that are relevant for bean definition handling.
+	 * <p>
+	 * 返回在 Bean Factory 的注册器
 	 */
 	BeanDefinitionRegistry getRegistry();
 
@@ -60,8 +64,10 @@ public interface BeanDefinitionReader {
 	 * <p>There is also a {@code loadBeanDefinitions(String)} method available,
 	 * for loading bean definitions from a resource location (or location pattern).
 	 * This is a convenience to avoid explicit ResourceLoader handling.
+	 *
 	 * @see #loadBeanDefinitions(String)
 	 * @see org.springframework.core.io.support.ResourcePatternResolver
+	 * 获取使用本地资源的 ResourceLoader
 	 */
 	@Nullable
 	ResourceLoader getResourceLoader();
@@ -71,6 +77,8 @@ public interface BeanDefinitionReader {
 	 * <p>{@code null} suggests to not load bean classes eagerly
 	 * but rather to just register bean definitions with class names,
 	 * with the corresponding Classes to be resolved later (or never).
+	 * <p>
+	 * 获取 ClassLoader
 	 */
 	@Nullable
 	ClassLoader getBeanClassLoader();
@@ -78,23 +86,31 @@ public interface BeanDefinitionReader {
 	/**
 	 * Return the BeanNameGenerator to use for anonymous beans
 	 * (without explicit bean name specified).
+	 * <p>
+	 * 获取 Bean 名称生成器
 	 */
 	BeanNameGenerator getBeanNameGenerator();
 
 
 	/**
 	 * Load bean definitions from the specified resource.
+	 *
 	 * @param resource the resource descriptor
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
+	 *                                      <p>
+	 *                                      从特定 Resource 中加载 BeanDefinition
 	 */
 	int loadBeanDefinitions(Resource resource) throws BeanDefinitionStoreException;
 
 	/**
 	 * Load bean definitions from the specified resources.
+	 *
 	 * @param resources the resource descriptors
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
+	 *                                      <p>
+	 *                                      从特定的多个资源加载器中加载 BeanDefinition
 	 */
 	int loadBeanDefinitions(Resource... resources) throws BeanDefinitionStoreException;
 
@@ -102,22 +118,28 @@ public interface BeanDefinitionReader {
 	 * Load bean definitions from the specified resource location.
 	 * <p>The location can also be a location pattern, provided that the
 	 * ResourceLoader of this bean definition reader is a ResourcePatternResolver.
+	 *
 	 * @param location the resource location, to be loaded with the ResourceLoader
-	 * (or ResourcePatternResolver) of this bean definition reader
+	 *                 (or ResourcePatternResolver) of this bean definition reader
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
 	 * @see #getResourceLoader()
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource)
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource[])
+	 * <p>
+	 * 从本地文件 BeanDefinition
 	 */
 	int loadBeanDefinitions(String location) throws BeanDefinitionStoreException;
 
 	/**
 	 * Load bean definitions from the specified resource locations.
+	 *
 	 * @param locations the resource locations, to be loaded with the ResourceLoader
-	 * (or ResourcePatternResolver) of this bean definition reader
+	 *                  (or ResourcePatternResolver) of this bean definition reader
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
+	 *                                      <p>
+	 *                                      从多个路径中获取 BeanDefinition 流程
 	 */
 	int loadBeanDefinitions(String... locations) throws BeanDefinitionStoreException;
 
