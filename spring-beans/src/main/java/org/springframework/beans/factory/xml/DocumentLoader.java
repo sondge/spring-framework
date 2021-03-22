@@ -24,6 +24,8 @@ import org.xml.sax.InputSource;
 /**
  * Strategy interface for loading an XML {@link Document}.
  *
+ * 加载 XML 方式的策略模式
+ *
  * @author Rob Harrop
  * @since 2.0
  * @see DefaultDocumentLoader
@@ -41,6 +43,12 @@ public interface DocumentLoader {
 	 * @param namespaceAware {@code true} if support for XML namespaces is to be provided
 	 * @return the loaded {@link Document document}
 	 * @throws Exception if an error occurs
+	 *
+	 * inputSource 加载 Document 的 Resource 资源
+	 * entryResolver 解析文件的解析器
+	 * errorHandler 处理加载 Document 的错误
+	 * validationMode 验证模式
+	 * namespaceAware 命名空间支持，如果需要提供命名空间的支持需要设置值为 true
 	 */
 	Document loadDocument(
 			InputSource inputSource, EntityResolver entityResolver,

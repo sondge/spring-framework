@@ -40,10 +40,10 @@ import org.springframework.lang.Nullable;
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @author Rick Evans
- * @since 2.0
  * @see #getBeanClass
  * @see #getBeanClassName
  * @see #doParse
+ * @since 2.0
  */
 public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
@@ -51,40 +51,53 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 	 * Creates a {@link BeanDefinitionBuilder} instance for the
 	 * {@link #getBeanClass bean Class} and passes it to the
 	 * {@link #doParse} strategy method.
-	 * @param element the element that is to be parsed into a single BeanDefinition
+	 *
+	 * @param element       the element that is to be parsed into a single BeanDefinition
 	 * @param parserContext the object encapsulating the current state of the parsing process
 	 * @return the BeanDefinition resulting from the parsing of the supplied {@link Element}
 	 * @throws IllegalStateException if the bean {@link Class} returned from
-	 * {@link #getBeanClass(org.w3c.dom.Element)} is {@code null}
+	 *                               {@link #getBeanClass(org.w3c.dom.Element)} is {@code null}
 	 * @see #doParse
 	 */
 	@Override
 	protected final AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
+		// 创建 BeanDefinitionBuilder 对象
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition();
+		// 获取父元素
 		String parentName = getParentName(element);
+		// 如果父元素不为空
 		if (parentName != null) {
+			// 获取父标签
 			builder.getRawBeanDefinition().setParentName(parentName);
 		}
+		// 获取元素对应的 类
 		Class<?> beanClass = getBeanClass(element);
 		if (beanClass != null) {
+			// 设置对应的类
 			builder.getRawBeanDefinition().setBeanClass(beanClass);
-		}
-		else {
+		} else {
+			// 设置的类名
 			String beanClassName = getBeanClassName(element);
 			if (beanClassName != null) {
+				// 设置对应的类名
 				builder.getRawBeanDefinition().setBeanClassName(beanClassName);
 			}
 		}
+		// 设置对应的资源
 		builder.getRawBeanDefinition().setSource(parserContext.extractSource(element));
+		// 获取对应的 BeanDefinition
 		BeanDefinition containingBd = parserContext.getContainingBeanDefinition();
 		if (containingBd != null) {
 			// Inner bean definition must receive same scope as containing bean.
+			// 设置对应的 scope
 			builder.setScope(containingBd.getScope());
 		}
 		if (parserContext.isDefaultLazyInit()) {
 			// Default-lazy-init applies to custom bean definitions as well.
+			// 设置懒加载
 			builder.setLazyInit(true);
 		}
+		// 解析对应的元素
 		doParse(element, parserContext, builder);
 		return builder.getBeanDefinition();
 	}
@@ -94,6 +107,7 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 	 * in case of the current bean being defined as a child bean.
 	 * <p>The default implementation returns {@code null},
 	 * indicating a root bean definition.
+	 *
 	 * @param element the {@code Element} that is being parsed
 	 * @return the name of the parent bean for the currently parsed bean,
 	 * or {@code null} if none
@@ -110,6 +124,7 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 	 * dependence on the bean implementation class. The BeanDefinitionParser
 	 * and its NamespaceHandler can be used within an IDE plugin then, even
 	 * if the application classes are not available on the plugin's classpath.
+	 *
 	 * @param element the {@code Element} that is being parsed
 	 * @return the {@link Class} of the bean that is being defined via parsing
 	 * the supplied {@code Element}, or {@code null} if none
@@ -122,6 +137,7 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 
 	/**
 	 * Determine the bean class name corresponding to the supplied {@link Element}.
+	 *
 	 * @param element the {@code Element} that is being parsed
 	 * @return the class name of the bean that is being defined via parsing
 	 * the supplied {@code Element}, or {@code null} if none
@@ -137,9 +153,10 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 	 * {@link BeanDefinitionBuilder} as required.
 	 * <p>The default implementation delegates to the {@code doParse}
 	 * version without ParserContext argument.
-	 * @param element the XML element being parsed
+	 *
+	 * @param element       the XML element being parsed
 	 * @param parserContext the object encapsulating the current state of the parsing process
-	 * @param builder used to define the {@code BeanDefinition}
+	 * @param builder       used to define the {@code BeanDefinition}
 	 * @see #doParse(Element, BeanDefinitionBuilder)
 	 */
 	protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
@@ -150,6 +167,7 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 	 * Parse the supplied {@link Element} and populate the supplied
 	 * {@link BeanDefinitionBuilder} as required.
 	 * <p>The default implementation does nothing.
+	 *
 	 * @param element the XML element being parsed
 	 * @param builder used to define the {@code BeanDefinition}
 	 */

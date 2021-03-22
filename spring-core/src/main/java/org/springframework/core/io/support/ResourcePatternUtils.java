@@ -35,6 +35,8 @@ public abstract class ResourcePatternUtils {
 	/**
 	 * Return whether the given resource location is a URL: either a
 	 * special "classpath" or "classpath*" pseudo URL or a standard URL.
+	 *
+	 * // 判断是否是以 classpath 或者 classpath* 开头的 URL 或者是标准的 URL
 	 * @param resourceLocation the location String to check
 	 * @return whether the location qualifies as a URL
 	 * @see ResourcePatternResolver#CLASSPATH_ALL_URL_PREFIX

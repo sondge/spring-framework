@@ -16,19 +16,18 @@
 
 package org.springframework.beans.factory.xml;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.lang.Nullable;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.lang.Nullable;
 
 /**
  * {@code EntityResolver} implementation that tries to resolve entity references
@@ -53,14 +52,17 @@ import org.springframework.lang.Nullable;
  */
 public class ResourceEntityResolver extends DelegatingEntityResolver {
 
+	// 设置日志信息
 	private static final Log logger = LogFactory.getLog(ResourceEntityResolver.class);
-
+	// 定义一个资源加载器
 	private final ResourceLoader resourceLoader;
 
 
 	/**
 	 * Create a ResourceEntityResolver for the specified ResourceLoader
 	 * (usually, an ApplicationContext).
+	 *
+	 * 从给定的 ResourceLoader(通常是一个 ApplicationContext) 中创建一个 ResourceEntityResolver
 	 * @param resourceLoader the ResourceLoader (or ApplicationContext)
 	 * to load XML entity includes with
 	 */
@@ -74,16 +76,21 @@ public class ResourceEntityResolver extends DelegatingEntityResolver {
 	@Nullable
 	public InputSource resolveEntity(@Nullable String publicId, @Nullable String systemId)
 			throws SAXException, IOException {
-
+		// 从上述过程中获取 resolver
 		InputSource source = super.resolveEntity(publicId, systemId);
-
+		// 如果 source 为空
 		if (source == null && systemId != null) {
+			// 定义一个资源路径
 			String resourcePath = null;
 			try {
+				// 编码 systemId
 				String decodedSystemId = URLDecoder.decode(systemId, "UTF-8");
+				// 获取给定的 url
 				String givenUrl = new URL(decodedSystemId).toString();
+				// 获取根 url
 				String systemRootUrl = new File("").toURI().toURL().toString();
 				// Try relative to resource base if currently in system root.
+				// 如果给定的 url 是 systemRootUrl
 				if (givenUrl.startsWith(systemRootUrl)) {
 					resourcePath = givenUrl.substring(systemRootUrl.length());
 				}
@@ -94,27 +101,35 @@ public class ResourceEntityResolver extends DelegatingEntityResolver {
 					logger.debug("Could not resolve XML entity [" + systemId + "] against system root URL", ex);
 				}
 				// No URL (or no resolvable URL) -> try relative to resource base.
+				// 获取资源路径
 				resourcePath = systemId;
 			}
 			if (resourcePath != null) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Trying to locate XML entity [" + systemId + "] as resource [" + resourcePath + "]");
 				}
+				// 加载资源
 				Resource resource = this.resourceLoader.getResource(resourcePath);
+				// 获取一个 InputSource
 				source = new InputSource(resource.getInputStream());
+				// 获取一个 publiceId
 				source.setPublicId(publicId);
+				// 设置一个 systemId
 				source.setSystemId(systemId);
 				if (logger.isDebugEnabled()) {
 					logger.debug("Found XML entity [" + systemId + "]: " + resource);
 				}
 			}
+			// 如果结尾包含 DTD 或者 XSD
 			else if (systemId.endsWith(DTD_SUFFIX) || systemId.endsWith(XSD_SUFFIX)) {
 				// External dtd/xsd lookup via https even for canonical http declaration
 				String url = systemId;
+				// 将 http: 替换成 https
 				if (url.startsWith("http:")) {
 					url = "https:" + url.substring(5);
 				}
 				try {
+					// 设置资源
 					source = new InputSource(new URL(url).openStream());
 					source.setPublicId(publicId);
 					source.setSystemId(systemId);

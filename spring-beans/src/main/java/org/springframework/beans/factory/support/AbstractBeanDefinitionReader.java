@@ -246,7 +246,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	 * 从特定的资源路径加载 资源
 	 */
 	public int loadBeanDefinitions(String location, @Nullable Set<Resource> actualResources) throws BeanDefinitionStoreException {
-		// 获取资源架子啊器
+		// 获取资源处理器
 		ResourceLoader resourceLoader = getResourceLoader();
 		if (resourceLoader == null) {
 			throw new BeanDefinitionStoreException(

@@ -16,19 +16,18 @@
 
 package org.springframework.beans.factory.xml;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.lang.Nullable;
+import org.springframework.util.xml.XmlValidationModeDetector;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 
-import org.springframework.lang.Nullable;
-import org.springframework.util.xml.XmlValidationModeDetector;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Spring's default {@link DocumentLoader} implementation.
@@ -38,6 +37,8 @@ import org.springframework.util.xml.XmlValidationModeDetector;
  * load documents, then one strategy is to define a corresponding Java system property
  * when starting your JVM. For example, to use the Oracle {@link DocumentBuilder},
  * you might start your application like as follows:
+ * <p>
+ * 默认文档解析器
  *
  * <pre code="class">java -Djavax.xml.parsers.DocumentBuilderFactory=oracle.xml.jaxp.JXDocumentBuilderFactory MyMainClass</pre>
  *
@@ -49,67 +50,83 @@ public class DefaultDocumentLoader implements DocumentLoader {
 
 	/**
 	 * JAXP attribute used to configure the schema language for validation.
+	 * <p>
+	 * 定义配置 schema JAXP 属性
 	 */
 	private static final String SCHEMA_LANGUAGE_ATTRIBUTE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
 
 	/**
 	 * JAXP attribute value indicating the XSD schema language.
+	 * <p>
+	 * 定义 XSD scheme JAXP 的值
 	 */
 	private static final String XSD_SCHEMA_LANGUAGE = "http://www.w3.org/2001/XMLSchema";
 
-
+	/**
+	 * 定义工厂日志
+	 */
 	private static final Log logger = LogFactory.getLog(DefaultDocumentLoader.class);
 
 
 	/**
 	 * Load the {@link Document} at the supplied {@link InputSource} using the standard JAXP-configured
 	 * XML parser.
+	 * <p>
+	 * 加载文档处理器使用 JAXP-XML 配置解析
 	 */
 	@Override
 	public Document loadDocument(InputSource inputSource, EntityResolver entityResolver,
-			ErrorHandler errorHandler, int validationMode, boolean namespaceAware) throws Exception {
+								 ErrorHandler errorHandler, int validationMode, boolean namespaceAware) throws Exception {
 
+		// 创建 DocumentBuilder 工厂
 		DocumentBuilderFactory factory = createDocumentBuilderFactory(validationMode, namespaceAware);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Using JAXP provider [" + factory.getClass().getName() + "]");
 		}
+		// 创建 DocumentBuilder
 		DocumentBuilder builder = createDocumentBuilder(factory, entityResolver, errorHandler);
+		// 解析资源
 		return builder.parse(inputSource);
 	}
 
 	/**
 	 * Create the {@link DocumentBuilderFactory} instance.
+	 *
 	 * @param validationMode the type of validation: {@link XmlValidationModeDetector#VALIDATION_DTD DTD}
-	 * or {@link XmlValidationModeDetector#VALIDATION_XSD XSD})
+	 *                       or {@link XmlValidationModeDetector#VALIDATION_XSD XSD})
 	 * @param namespaceAware whether the returned factory is to provide support for XML namespaces
 	 * @return the JAXP DocumentBuilderFactory
 	 * @throws ParserConfigurationException if we failed to build a proper DocumentBuilderFactory
 	 */
 	protected DocumentBuilderFactory createDocumentBuilderFactory(int validationMode, boolean namespaceAware)
 			throws ParserConfigurationException {
-
+		// 获取工厂示例
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		// 设置是否有命名空间
 		factory.setNamespaceAware(namespaceAware);
-
+		// 设置是否是否开启了验证模式
 		if (validationMode != XmlValidationModeDetector.VALIDATION_NONE) {
+			// 设置验证为 true
 			factory.setValidating(true);
+			// 验证模式为 XSD
 			if (validationMode == XmlValidationModeDetector.VALIDATION_XSD) {
 				// Enforce namespace aware for XSD...
+				// 强制命名空间为 true
 				factory.setNamespaceAware(true);
 				try {
+					// 设置命名空间的s cheme
 					factory.setAttribute(SCHEMA_LANGUAGE_ATTRIBUTE, XSD_SCHEMA_LANGUAGE);
-				}
-				catch (IllegalArgumentException ex) {
+				} catch (IllegalArgumentException ex) {
 					ParserConfigurationException pcex = new ParserConfigurationException(
 							"Unable to validate using XSD: Your JAXP provider [" + factory +
-							"] does not support XML Schema. Are you running on Java 1.4 with Apache Crimson? " +
-							"Upgrade to Apache Xerces (or Java 1.5) for full XSD support.");
+									"] does not support XML Schema. Are you running on Java 1.4 with Apache Crimson? " +
+									"Upgrade to Apache Xerces (or Java 1.5) for full XSD support.");
 					pcex.initCause(ex);
 					throw pcex;
 				}
 			}
 		}
-
+		// 返回对应的工厂模式
 		return factory;
 	}
 
@@ -117,22 +134,27 @@ public class DefaultDocumentLoader implements DocumentLoader {
 	 * Create a JAXP DocumentBuilder that this bean definition reader
 	 * will use for parsing XML documents. Can be overridden in subclasses,
 	 * adding further initialization of the builder.
-	 * @param factory the JAXP DocumentBuilderFactory that the DocumentBuilder
-	 * should be created with
+	 *
+	 * @param factory        the JAXP DocumentBuilderFactory that the DocumentBuilder
+	 *                       should be created with
 	 * @param entityResolver the SAX EntityResolver to use
-	 * @param errorHandler the SAX ErrorHandler to use
+	 * @param errorHandler   the SAX ErrorHandler to use
 	 * @return the JAXP DocumentBuilder
 	 * @throws ParserConfigurationException if thrown by JAXP methods
+	 *                                      <p>
+	 *                                      创建 createDocumentBuilder
 	 */
 	protected DocumentBuilder createDocumentBuilder(DocumentBuilderFactory factory,
-			@Nullable EntityResolver entityResolver, @Nullable ErrorHandler errorHandler)
+													@Nullable EntityResolver entityResolver, @Nullable ErrorHandler errorHandler)
 			throws ParserConfigurationException {
-
+		// 从工厂中创建 newDocumentBuilder
 		DocumentBuilder docBuilder = factory.newDocumentBuilder();
 		if (entityResolver != null) {
+			// 设置 文件解析器
 			docBuilder.setEntityResolver(entityResolver);
 		}
 		if (errorHandler != null) {
+			// 设置处理 Document 处理器
 			docBuilder.setErrorHandler(errorHandler);
 		}
 		return docBuilder;

@@ -23,20 +23,22 @@ import org.springframework.lang.Nullable;
  * Can be implemented by {@link org.springframework.beans.factory.BeanFactory}
  * implementations in order to expose their singleton management facility
  * in a uniform manner.
- *
+ * <p>
+ * 为单例 bean 定义注册表的接口，可以用统一的方式实现暴露他们的单例管理设施
  * <p>The {@link ConfigurableBeanFactory} interface extends this interface.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see ConfigurableBeanFactory
  * @see org.springframework.beans.factory.support.DefaultSingletonBeanRegistry
  * @see org.springframework.beans.factory.support.AbstractBeanFactory
+ * @since 2.0
  */
 public interface SingletonBeanRegistry {
 
 	/**
 	 * Register the given existing object as singleton in the bean registry,
 	 * under the given bean name.
+	 * 从给定的名称和给定的对象注册值注册表中
 	 * <p>The given instance is supposed to be fully initialized; the registry
 	 * will not perform any initialization callbacks (in particular, it won't
 	 * call InitializingBean's {@code afterPropertiesSet} method).
@@ -49,7 +51,8 @@ public interface SingletonBeanRegistry {
 	 * for runtime registration of singletons. As a consequence, a registry
 	 * implementation should synchronize singleton access; it will have to do
 	 * this anyway if it supports a BeanFactory's lazy initialization of singletons.
-	 * @param beanName the name of the bean
+	 *
+	 * @param beanName        the name of the bean
 	 * @param singletonObject the existing singleton object
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 * @see org.springframework.beans.factory.DisposableBean#destroy
@@ -66,6 +69,9 @@ public interface SingletonBeanRegistry {
 	 * defined by a bean definition that already been created, in a raw fashion.
 	 * <p><b>NOTE:</b> This lookup method is not aware of FactoryBean prefixes or aliases.
 	 * You need to resolve the canonical bean name first before obtaining the singleton instance.
+	 * <p>
+	 * 根据给定的名称获取对应的单例实例
+	 *
 	 * @param beanName the name of the bean to look for
 	 * @return the registered singleton object, or {@code null} if none found
 	 * @see ConfigurableListableBeanFactory#getBeanDefinition
@@ -89,6 +95,9 @@ public interface SingletonBeanRegistry {
 	 * instance or created by bean definition), also checking ancestor factories.
 	 * <p><b>NOTE:</b> This lookup method is not aware of FactoryBean prefixes or aliases.
 	 * You need to resolve the canonical bean name first before checking the singleton status.
+	 * <p>
+	 * 检查注册表中是否是否包含对应的 beanName 单例
+	 *
 	 * @param beanName the name of the bean to look for
 	 * @return if this bean factory contains a singleton instance with the given name
 	 * @see #registerSingleton
@@ -99,11 +108,14 @@ public interface SingletonBeanRegistry {
 
 	/**
 	 * Return the names of singleton beans registered in this registry.
+	 * <p>
+	 * 从注册表中获取全部在注册表中的单例
 	 * <p>Only checks already instantiated singletons; does not return names
 	 * for singleton bean definitions which have not been instantiated yet.
 	 * <p>The main purpose of this method is to check manually registered singletons
 	 * (see {@link #registerSingleton}). Can also be used to check which singletons
 	 * defined by a bean definition have already been created.
+	 *
 	 * @return the list of names as a String array (never {@code null})
 	 * @see #registerSingleton
 	 * @see org.springframework.beans.factory.support.BeanDefinitionRegistry#getBeanDefinitionNames
@@ -118,6 +130,9 @@ public interface SingletonBeanRegistry {
 	 * <p>The main purpose of this method is to check manually registered singletons
 	 * (see {@link #registerSingleton}). Can also be used to count the number of
 	 * singletons defined by a bean definition that have already been created.
+	 * <p>
+	 * 返回全部的单例对象
+	 *
 	 * @return the number of singleton beans
 	 * @see #registerSingleton
 	 * @see org.springframework.beans.factory.support.BeanDefinitionRegistry#getBeanDefinitionCount
@@ -127,6 +142,9 @@ public interface SingletonBeanRegistry {
 
 	/**
 	 * Return the singleton mutex used by this registry (for external collaborators).
+	 * <p>
+	 * 从对象中返回单例的互斥体实例
+	 *
 	 * @return the mutex object (never {@code null})
 	 * @since 4.2
 	 */

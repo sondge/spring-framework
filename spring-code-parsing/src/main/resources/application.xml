@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	   xmlns:myTag="http://www.cmsblogs.com/schema/user"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   http://www.springframework.org/schema/beans/spring-beans.xsd
+	   http://www.cmsblogs.com/schema/user
+	   http://www.cmsblogs.com/schema/user.xsd">
 	<bean id="myTestBean" class="club.sondge.code.parsing.MyTestBean"/>
 	<bean id="courier" class="club.sondge.code.parsing.Courier">
 		<constructor-arg name="addr" value="A 地区"/>
@@ -10,4 +14,15 @@
 	<bean id="man" class="club.sondge.code.parsing.Man">
 		<property name="courier" ref="courier"/>
 	</bean>
+	<bean id="bmw" class="club.sondge.code.parsing.lookup.BmwCar"/>
+	<bean id="hongqi" class="club.sondge.code.parsing.lookup.HongQiCar"/>
+	<bean id="display" class="club.sondge.code.parsing.lookup.Display">
+		<lookup-method name="getCar" bean="hongqi"/>
+	</bean>
+	<bean id="method" class="club.sondge.code.parsing.replacemethod.Method">
+		<replaced-method replacer="replaceMethod" name="display"/>
+	</bean>
+	<bean id="replaceMethod" class="club.sondge.code.parsing.replacemethod.ReplaceMethod"/>
+	<myTag:user id="user" userName="chess" email="123578@163.com"/>
+
 </beans>
