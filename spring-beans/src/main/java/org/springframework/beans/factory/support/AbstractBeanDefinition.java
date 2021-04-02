@@ -1432,7 +1432,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * @param mo the MethodOverride object to validate
 	 * @throws BeanDefinitionValidationException in case of validation failure
 	 *                                           <p>
-	 *                                           校验和准备重写方法名，如果存在对应的指定名称，如果没有找到，将其标记为未重载
+	 *                                           校验和准备重写方法名，如果存在对应的指定名称，如果找到了，将其标记为未重载
 	 */
 	protected void prepareMethodOverride(MethodOverride mo) throws BeanDefinitionValidationException {
 		// 早找对应的方法数量
@@ -1443,7 +1443,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 							"' on class [" + getBeanClassName() + "]");
 		} else if (count == 1) {
 			// Mark override as not overloaded, to avoid the overhead of arg type checking.
-			// 设置重载
+			// 设置未重载
 			mo.setOverloaded(false);
 		}
 	}

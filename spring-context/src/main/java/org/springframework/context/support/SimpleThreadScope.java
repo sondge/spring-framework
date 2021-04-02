@@ -16,16 +16,15 @@
 
 package org.springframework.context.support;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple thread-backed {@link Scope} implementation.
@@ -48,8 +47,8 @@ import org.springframework.lang.Nullable;
  *
  * @author Arjen Poutsma
  * @author Juergen Hoeller
- * @since 3.0
  * @see org.springframework.web.context.request.RequestScope
+ * @since 3.0
  */
 public class SimpleThreadScope implements Scope {
 
@@ -66,12 +65,16 @@ public class SimpleThreadScope implements Scope {
 
 	@Override
 	public Object get(String name, ObjectFactory<?> objectFactory) {
+		// 获取对应的 scope 实例
 		Map<String, Object> scope = this.threadScope.get();
 		// NOTE: Do NOT modify the following to use Map::computeIfAbsent. For details,
 		// see https://github.com/spring-projects/spring-framework/issues/25801.
+		// 不要修改以下内容以使用Map :: computeIfAbsent。有关详细信息
 		Object scopedObject = scope.get(name);
 		if (scopedObject == null) {
+			// 如果对象不存在，则从 工厂中获取对应的对象
 			scopedObject = objectFactory.getObject();
+			// 加载对应的名称
 			scope.put(name, scopedObject);
 		}
 		return scopedObject;
