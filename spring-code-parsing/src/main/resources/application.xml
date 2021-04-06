@@ -21,6 +21,14 @@
 		<replaced-method replacer="replaceMethod" name="display"/>
 	</bean>
 	<bean id="replaceMethod" class="club.sondge.code.parsing.replacemethod.ReplaceMethod"/>
-<!--	<myTag:user id="user" userName="chess" email="123578@163.com"/>-->
+	<!--	<myTag:user id="user" userName="chess" email="123578@163.com"/>-->
+	<bean id="myApplicationAware" class="club.sondge.code.parsing.aware.MyApplicationAware"/>
+	<bean id="myBeanPostProcessor" class="club.sondge.code.parsing.beanpostprocessor.MyBeanPostProcessor"/>
+	<bean id="initializingBeanTest" class="club.sondge.code.parsing.intmethod.InitializingBeanTest">
+		<property name="name" value="chenssy 1 号"/>
+	</bean>
+	<bean id="initializingBean1" class="club.sondge.code.parsing.intmethod.InitializingBeanTest" init-method="setOtherName">
+		<property name="name" value="chenssy 1 号"/>
+	</bean>
 
 </beans>
