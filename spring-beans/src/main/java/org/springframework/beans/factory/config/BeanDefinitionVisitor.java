@@ -16,18 +16,18 @@
 
 package org.springframework.beans.factory.config;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringValueResolver;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Visitor class for traversing {@link BeanDefinition} objects, in particular
@@ -76,17 +76,25 @@ public class BeanDefinitionVisitor {
 	 * @see #resolveStringValue(String)
 	 */
 	public void visitBeanDefinition(BeanDefinition beanDefinition) {
+		// 访问父类名称
 		visitParentName(beanDefinition);
+		// 访问 bean 的类名
 		visitBeanClassName(beanDefinition);
+		// 访问工厂名称
 		visitFactoryBeanName(beanDefinition);
+		// 访问工厂方法名称
 		visitFactoryMethodName(beanDefinition);
+		// 访问作用
 		visitScope(beanDefinition);
+		// 访问对应的属性值
 		if (beanDefinition.hasPropertyValues()) {
 			visitPropertyValues(beanDefinition.getPropertyValues());
 		}
 		if (beanDefinition.hasConstructorArgumentValues()) {
 			ConstructorArgumentValues cas = beanDefinition.getConstructorArgumentValues();
+			// 访问索引的参数值
 			visitIndexedArgumentValues(cas.getIndexedArgumentValues());
+			// 访问生成的参数值
 			visitGenericArgumentValues(cas.getGenericArgumentValues());
 		}
 	}
@@ -143,7 +151,9 @@ public class BeanDefinitionVisitor {
 
 	protected void visitPropertyValues(MutablePropertyValues pvs) {
 		PropertyValue[] pvArray = pvs.getPropertyValues();
+		// 遍历 PropertyValue 数组
 		for (PropertyValue pv : pvArray) {
+			// 解析真值
 			Object newVal = resolveValue(pv.getValue());
 			if (!ObjectUtils.nullSafeEquals(newVal, pv.getValue())) {
 				pvs.add(pv.getName(), newVal);
@@ -172,14 +182,21 @@ public class BeanDefinitionVisitor {
 	@SuppressWarnings("rawtypes")
 	@Nullable
 	protected Object resolveValue(@Nullable Object value) {
+		// 如果对应的对象是 BeanDefinition  类型的
 		if (value instanceof BeanDefinition) {
+			// 访问 BeanDefinition
 			visitBeanDefinition((BeanDefinition) value);
 		}
+		// 如果是 BeanDefinitionHolder 的类型
 		else if (value instanceof BeanDefinitionHolder) {
+			// 访问对应的 BeanDefinitionHolder
 			visitBeanDefinition(((BeanDefinitionHolder) value).getBeanDefinition());
 		}
+		// 如果是 RuntimeBeanReference 类型的
 		else if (value instanceof RuntimeBeanReference) {
+			// 获取对应的运行时引用
 			RuntimeBeanReference ref = (RuntimeBeanReference) value;
+			// 解析对应的字符字符串值
 			String newBeanName = resolveStringValue(ref.getBeanName());
 			if (newBeanName == null) {
 				return null;
@@ -218,6 +235,7 @@ public class BeanDefinitionVisitor {
 				typedStringValue.setValue(visitedString);
 			}
 		}
+		// 如果值是 String 类型的
 		else if (value instanceof String) {
 			return resolveStringValue((String) value);
 		}
@@ -284,6 +302,8 @@ public class BeanDefinitionVisitor {
 
 	/**
 	 * Resolve the given String value, for example parsing placeholders.
+	 *
+	 * 从给定的字符串值解析占位符
 	 * @param strVal the original String value
 	 * @return the resolved String value
 	 */
@@ -293,8 +313,10 @@ public class BeanDefinitionVisitor {
 			throw new IllegalStateException("No StringValueResolver specified - pass a resolver " +
 					"object into the constructor or override the 'resolveStringValue' method");
 		}
+		// 解析真值
 		String resolvedValue = this.valueResolver.resolveStringValue(strVal);
 		// Return original String if not modified.
+		// 返回对应的结果
 		return (strVal.equals(resolvedValue) ? strVal : resolvedValue);
 	}
 

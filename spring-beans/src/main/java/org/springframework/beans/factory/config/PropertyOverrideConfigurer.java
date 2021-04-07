@@ -16,29 +16,33 @@
 
 package org.springframework.beans.factory.config;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.BeanInitializationException;
+
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.PropertyValue;
-import org.springframework.beans.factory.BeanInitializationException;
-
 /**
- * Property resource configurer that overrides bean property values in an application
- * context definition. It <i>pushes</i> values from a properties file into bean definitions.
+ * Property resource configurer that overrides bean property values in an application context definition.
+ * <p>
+ * 在应用程序上下文定义中覆盖bean属性值的属性资源配置器。
+ * <p>
+ * It <i>pushes</i> values from a properties file into bean definitions.
+ * 他从一个配置文件中装在 bean 定义
  *
  * <p>Configuration lines are expected to be of the following form:
  *
  * <pre class="code">beanName.property=value</pre>
- *
+ * <p>
  * Example properties file:
  *
  * <pre class="code">dataSource.driverClassName=com.mysql.jdbc.Driver
  * dataSource.url=jdbc:mysql:mydb</pre>
- *
+ * <p>
  * In contrast to PropertyPlaceholderConfigurer, the original definition can have default
  * values or no values at all for such bean properties. If an overriding properties file does
  * not have an entry for a certain bean property, the default context definition is used.
@@ -58,30 +62,34 @@ import org.springframework.beans.factory.BeanInitializationException;
  *
  * @author Juergen Hoeller
  * @author Rod Johnson
- * @since 12.03.2003
  * @see #convertPropertyValue
  * @see PropertyPlaceholderConfigurer
+ * @since 12.03.2003
  */
 public class PropertyOverrideConfigurer extends PropertyResourceConfigurer {
 
 	/**
 	 * The default bean name separator.
+	 * 默认的 Bean 名称分隔符
 	 */
 	public static final String DEFAULT_BEAN_NAME_SEPARATOR = ".";
 
-
+	//  bean 名称分隔符
 	private String beanNameSeparator = DEFAULT_BEAN_NAME_SEPARATOR;
-
+	// 是否忽略无效的 keys
 	private boolean ignoreInvalidKeys = false;
 
 	/**
 	 * Contains names of beans that have overrides.
+	 * 被覆盖的 bean 的容器名称
 	 */
 	private final Set<String> beanNames = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
 
 	/**
 	 * Set the separator to expect between bean name and property path.
+	 *
+	 * 设置在 bean 名称和属性路径的分隔符
 	 * Default is a dot (".").
 	 */
 	public void setBeanNameSeparator(String beanNameSeparator) {
@@ -93,6 +101,8 @@ public class PropertyOverrideConfigurer extends PropertyResourceConfigurer {
 	 * <p>If you ignore invalid keys, keys that do not follow the 'beanName.property' format
 	 * (or refer to invalid bean names or properties) will just be logged at debug level.
 	 * This allows one to have arbitrary other keys in a properties file.
+	 *
+	 * 设置是否忽略无效的 keys
 	 */
 	public void setIgnoreInvalidKeys(boolean ignoreInvalidKeys) {
 		this.ignoreInvalidKeys = ignoreInvalidKeys;
@@ -102,13 +112,14 @@ public class PropertyOverrideConfigurer extends PropertyResourceConfigurer {
 	@Override
 	protected void processProperties(ConfigurableListableBeanFactory beanFactory, Properties props)
 			throws BeansException {
-
-		for (Enumeration<?> names = props.propertyNames(); names.hasMoreElements();) {
+		// 迭代配置文件里面的内容
+		for (Enumeration<?> names = props.propertyNames(); names.hasMoreElements(); ) {
+			// 获取这个 key
 			String key = (String) names.nextElement();
 			try {
+				// 解析对应的 key
 				processKey(beanFactory, key, props.getProperty(key));
-			}
-			catch (BeansException ex) {
+			} catch (BeansException ex) {
 				String msg = "Could not process key '" + key + "' in PropertyOverrideConfigurer";
 				if (!this.ignoreInvalidKeys) {
 					throw new BeanInitializationException(msg, ex);
@@ -125,15 +136,20 @@ public class PropertyOverrideConfigurer extends PropertyResourceConfigurer {
 	 */
 	protected void processKey(ConfigurableListableBeanFactory factory, String key, String value)
 			throws BeansException {
-
+		// 获取分隔符的位置
 		int separatorIndex = key.indexOf(this.beanNameSeparator);
+		// 如果不存在，则为无效的 key
 		if (separatorIndex == -1) {
 			throw new BeanInitializationException("Invalid key '" + key +
 					"': expected 'beanName" + this.beanNameSeparator + "property'");
 		}
+		// 获取对应的 bean 名称
 		String beanName = key.substring(0, separatorIndex);
+		// 获取对应的属性
 		String beanProperty = key.substring(separatorIndex + 1);
+		// 将 beanName 加入集合中
 		this.beanNames.add(beanName);
+		// 应用属性值
 		applyPropertyValue(factory, beanName, beanProperty, value);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Property '" + key + "' set to value [" + value + "]");
@@ -142,18 +158,23 @@ public class PropertyOverrideConfigurer extends PropertyResourceConfigurer {
 
 	/**
 	 * Apply the given property value to the corresponding bean.
+	 * 从给定的属性值赋值给对应的 bean
 	 */
 	protected void applyPropertyValue(
 			ConfigurableListableBeanFactory factory, String beanName, String property, String value) {
-
+		// 获取对应的 beanDefinition
 		BeanDefinition bd = factory.getBeanDefinition(beanName);
 		BeanDefinition bdToUse = bd;
 		while (bd != null) {
 			bdToUse = bd;
+			// 获取原始的 bean
 			bd = bd.getOriginatingBeanDefinition();
 		}
+		// 获取对应的属性值
 		PropertyValue pv = new PropertyValue(property, value);
+		// 设置可选的值
 		pv.setOptional(this.ignoreInvalidKeys);
+		// 增加对应的属性值
 		bdToUse.getPropertyValues().addPropertyValue(pv);
 	}
 
@@ -161,6 +182,7 @@ public class PropertyOverrideConfigurer extends PropertyResourceConfigurer {
 	/**
 	 * Were there overrides for this bean?
 	 * Only valid after processing has occurred at least once.
+	 *
 	 * @param beanName name of the bean to query status for
 	 * @return whether there were property overrides for the named bean
 	 */

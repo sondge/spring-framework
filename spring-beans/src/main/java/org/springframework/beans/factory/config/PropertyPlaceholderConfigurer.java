@@ -16,8 +16,6 @@
 
 package org.springframework.beans.factory.config;
 
-import java.util.Properties;
-
 import org.springframework.beans.BeansException;
 import org.springframework.core.Constants;
 import org.springframework.core.SpringProperties;
@@ -26,6 +24,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
 import org.springframework.util.StringValueResolver;
+
+import java.util.Properties;
 
 /**
  * {@link PlaceholderConfigurerSupport} subclass that resolves ${...} placeholders against
@@ -206,18 +206,18 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 	@Override
 	protected void processProperties(ConfigurableListableBeanFactory beanFactoryToProcess, Properties props)
 			throws BeansException {
-
+		// 创建 StringValueResolver
 		StringValueResolver valueResolver = new PlaceholderResolvingStringValueResolver(props);
+		// 执行处理器
 		doProcessProperties(beanFactoryToProcess, valueResolver);
 	}
-
-
+	// StringValue 中的占位符处理器
 	private class PlaceholderResolvingStringValueResolver implements StringValueResolver {
-
+		// 属性占位符帮助值
 		private final PropertyPlaceholderHelper helper;
-
+		// 占位符解析器
 		private final PlaceholderResolver resolver;
-
+		// 构造对应的占位符处理器
 		public PlaceholderResolvingStringValueResolver(Properties props) {
 			this.helper = new PropertyPlaceholderHelper(
 					placeholderPrefix, placeholderSuffix, valueSeparator, ignoreUnresolvablePlaceholders);
@@ -227,6 +227,7 @@ public class PropertyPlaceholderConfigurer extends PlaceholderConfigurerSupport 
 		@Override
 		@Nullable
 		public String resolveStringValue(String strVal) throws BeansException {
+			// 解析真值
 			String resolved = this.helper.replacePlaceholders(strVal, this.resolver);
 			if (trimValues) {
 				resolved = resolved.trim();

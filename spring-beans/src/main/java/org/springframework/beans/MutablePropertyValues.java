@@ -16,6 +16,9 @@
 
 package org.springframework.beans;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,9 +30,6 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 /**
  * The default implementation of the {@link PropertyValues} interface.
@@ -171,8 +171,11 @@ public class MutablePropertyValues implements PropertyValues, Serializable {
 	public MutablePropertyValues addPropertyValue(PropertyValue pv) {
 		for (int i = 0; i < this.propertyValueList.size(); i++) {
 			PropertyValue currentPv = this.propertyValueList.get(i);
+			// 匹配当前的属性
 			if (currentPv.getName().equals(pv.getName())) {
+				// 如果访问到了直接访问
 				pv = mergeIfRequired(pv, currentPv);
+				// 设置对应的属性值
 				setPropertyValueAt(pv, i);
 				return this;
 			}

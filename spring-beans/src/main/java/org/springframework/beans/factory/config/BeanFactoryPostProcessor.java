@@ -23,6 +23,8 @@ import org.springframework.beans.BeansException;
  * bean definitions, adapting the bean property values of the context's underlying
  * bean factory.
  *
+ * 在 ApplicationContext 的 BeanDefinition以及调整允许用户修改工厂钩子
+ *
  * <p>Useful for custom config files targeted at system administrators that
  * override bean properties configured in the application context. See
  * {@link PropertyResourceConfigurer} and its concrete implementations for
@@ -63,10 +65,12 @@ import org.springframework.beans.BeansException;
 public interface BeanFactoryPostProcessor {
 
 	/**
-	 * Modify the application context's internal bean factory after its standard
-	 * initialization. All bean definitions will have been loaded, but no beans
-	 * will have been instantiated yet. This allows for overriding or adding
-	 * properties even to eager-initializing beans.
+	 * Modify the application context's internal bean factory after its standard initialization.
+	 * 在标准初始化之后，修改上下中的内部 BeanFactory
+	 * All bean definitions will have been loaded, but no beans will have been instantiated yet.
+	 * 所有的 BeanDefinition 都会被加载，但是没有实例化任何 bean
+	 * This allows for overriding or adding properties even to eager-initializing beans.
+	 * 这甚至可以覆盖或添加属性，甚至可以用于初始化 bean。
 	 * @param beanFactory the bean factory used by the application context
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */

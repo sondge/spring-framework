@@ -16,16 +16,15 @@
 
 package org.springframework.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.lang.Nullable;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Utility class for working with Strings that have placeholder values in them. A placeholder takes the form
@@ -38,9 +37,10 @@ import org.springframework.lang.Nullable;
  * @since 3.0
  */
 public class PropertyPlaceholderHelper {
-
+	// 定义日志信息
 	private static final Log logger = LogFactory.getLog(PropertyPlaceholderHelper.class);
 
+	// 定义前缀集合
 	private static final Map<String, String> wellKnownSimplePrefixes = new HashMap<>(4);
 
 	static {
@@ -126,34 +126,48 @@ public class PropertyPlaceholderHelper {
 
 	protected String parseStringValue(
 			String value, PlaceholderResolver placeholderResolver, @Nullable Set<String> visitedPlaceholders) {
-
+		// 获取前缀 ${ 的索引位置
 		int startIndex = value.indexOf(this.placeholderPrefix);
+		// 如果没有获取到对应的位置，则直接返回
 		if (startIndex == -1) {
 			return value;
 		}
-
+		// 获取对应的结果
 		StringBuilder result = new StringBuilder(value);
 		while (startIndex != -1) {
+			// 寻找占位符结束
 			int endIndex = findPlaceholderEndIndex(result, startIndex);
 			if (endIndex != -1) {
+				//  获取对应的占位符
 				String placeholder = result.substring(startIndex + this.placeholderPrefix.length(), endIndex);
+				// 获取起始的占位符
 				String originalPlaceholder = placeholder;
+				// 获取访问的占位符集合
 				if (visitedPlaceholders == null) {
 					visitedPlaceholders = new HashSet<>(4);
 				}
+				// 新增占位符
 				if (!visitedPlaceholders.add(originalPlaceholder)) {
 					throw new IllegalArgumentException(
 							"Circular placeholder reference '" + originalPlaceholder + "' in property definitions");
 				}
 				// Recursive invocation, parsing placeholders contained in the placeholder key.
+				// 递归调用，解析占位符键中包含的占位符。
 				placeholder = parseStringValue(placeholder, placeholderResolver, visitedPlaceholders);
 				// Now obtain the value for the fully resolved key...
+				// 现在获取完全解析的键的值...
 				String propVal = placeholderResolver.resolvePlaceholder(placeholder);
+				// 如果完全解析的属性值为空，但是分隔符不为空
+				// 获取默认值逻辑
 				if (propVal == null && this.valueSeparator != null) {
+					// 获取分隔符的索引
 					int separatorIndex = placeholder.indexOf(this.valueSeparator);
 					if (separatorIndex != -1) {
+						// 获取对应的分隔符
 						String actualPlaceholder = placeholder.substring(0, separatorIndex);
+						// 获取默认值
 						String defaultValue = placeholder.substring(separatorIndex + this.valueSeparator.length());
+						// 解析真正的占位符
 						propVal = placeholderResolver.resolvePlaceholder(actualPlaceholder);
 						if (propVal == null) {
 							propVal = defaultValue;
@@ -162,8 +176,11 @@ public class PropertyPlaceholderHelper {
 				}
 				if (propVal != null) {
 					// Recursive invocation, parsing placeholders contained in the
+					// 递归调用解析对应的占位符
 					// previously resolved placeholder value.
+					// 获取先前已经解析的占位符
 					propVal = parseStringValue(propVal, placeholderResolver, visitedPlaceholders);
+					// 替换对应的转化值位置
 					result.replace(startIndex, endIndex + this.placeholderSuffix.length(), propVal);
 					if (logger.isTraceEnabled()) {
 						logger.trace("Resolved placeholder '" + placeholder + "'");
@@ -172,6 +189,7 @@ public class PropertyPlaceholderHelper {
 				}
 				else if (this.ignoreUnresolvablePlaceholders) {
 					// Proceed with unprocessed value.
+					// 忽略值
 					startIndex = result.indexOf(this.placeholderPrefix, endIndex + this.placeholderSuffix.length());
 				}
 				else {
