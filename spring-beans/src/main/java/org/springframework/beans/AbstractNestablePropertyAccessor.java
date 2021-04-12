@@ -16,6 +16,18 @@
 
 package org.springframework.beans;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.core.CollectionFactory;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionException;
+import org.springframework.core.convert.ConverterNotFoundException;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
+
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -31,19 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.core.CollectionFactory;
-import org.springframework.core.ResolvableType;
-import org.springframework.core.convert.ConversionException;
-import org.springframework.core.convert.ConverterNotFoundException;
-import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * A basic {@link ConfigurablePropertyAccessor} that provides the necessary
@@ -115,10 +114,14 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 
 	/**
 	 * Create a new accessor for the given object.
+	 *
+	 * 从给定的对象创建一个存取器
 	 * @param object the object wrapped by this accessor
 	 */
 	protected AbstractNestablePropertyAccessor(Object object) {
+		// 注册默认编辑器
 		registerDefaultEditors();
+		//  设置包装实例
 		setWrappedInstance(object);
 	}
 
@@ -180,6 +183,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 	 * @param object the new target object
 	 */
 	public void setWrappedInstance(Object object) {
+		// 设置对应的包装实现
 		setWrappedInstance(object, "", null);
 	}
 
@@ -191,11 +195,16 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 	 * @param rootObject the root object at the top of the path
 	 */
 	public void setWrappedInstance(Object object, @Nullable String nestedPath, @Nullable Object rootObject) {
+		// 获取对应的包装对象
 		this.wrappedObject = ObjectUtils.unwrapOptional(object);
 		Assert.notNull(this.wrappedObject, "Target object must not be null");
+		// 获取最近的类型
 		this.nestedPath = (nestedPath != null ? nestedPath : "");
+		// 获取对应的结果信息
 		this.rootObject = (!this.nestedPath.isEmpty() ? rootObject : this.wrappedObject);
+		//
 		this.nestedPropertyAccessors = null;
+		// 获取类型转化器代表
 		this.typeConverterDelegate = new TypeConverterDelegate(this, this.wrappedObject);
 	}
 

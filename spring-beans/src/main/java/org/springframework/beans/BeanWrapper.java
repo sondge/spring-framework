@@ -21,6 +21,8 @@ import java.beans.PropertyDescriptor;
 /**
  * The central interface of Spring's low-level JavaBeans infrastructure.
  *
+ * Spring 的低级 JavaBeans 基础结构的中央接口。
+ *
  * <p>Typically not used directly but rather implicitly via a
  * {@link org.springframework.beans.factory.BeanFactory} or a
  * {@link org.springframework.validation.DataBinder}.
@@ -50,6 +52,8 @@ public interface BeanWrapper extends ConfigurablePropertyAccessor {
 
 	/**
 	 * Specify a limit for array and collection auto-growing.
+	 *
+	 * 设置指定的数组和集合自动增长的限定
 	 * <p>Default is unlimited on a plain BeanWrapper.
 	 * @since 4.1
 	 */
@@ -57,22 +61,30 @@ public interface BeanWrapper extends ConfigurablePropertyAccessor {
 
 	/**
 	 * Return the limit for array and collection auto-growing.
+	 *
+	 * 返回数组和集合的自动增长的限定
 	 * @since 4.1
 	 */
 	int getAutoGrowCollectionLimit();
 
 	/**
 	 * Return the bean instance wrapped by this object.
+	 *
+	 * 返回这个 bean 实例包装通过这个对象
 	 */
 	Object getWrappedInstance();
 
 	/**
 	 * Return the type of the wrapped bean instance.
+	 *
+	 * 返回被包装的示例的类型
 	 */
 	Class<?> getWrappedClass();
 
 	/**
 	 * Obtain the PropertyDescriptors for the wrapped object
+	 *
+	 * 获取这个被包装的对象的 PropertyDescriptors
 	 * (as determined by standard JavaBeans introspection).
 	 * @return the PropertyDescriptors for the wrapped object
 	 */
@@ -81,6 +93,8 @@ public interface BeanWrapper extends ConfigurablePropertyAccessor {
 	/**
 	 * Obtain the property descriptor for a specific property
 	 * of the wrapped object.
+	 *
+	 * 通过一个特殊的属性获得这个包装的对象 PropertyDescriptor
 	 * @param propertyName the property to obtain the descriptor for
 	 * (may be a nested path, but no indexed/mapped property)
 	 * @return the property descriptor for the specified property

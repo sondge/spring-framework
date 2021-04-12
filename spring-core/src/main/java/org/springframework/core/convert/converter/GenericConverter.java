@@ -16,11 +16,11 @@
 
 package org.springframework.core.convert.converter;
 
-import java.util.Set;
-
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.Set;
 
 /**
  * Generic converter interface for converting between two or more types.
@@ -69,17 +69,21 @@ public interface GenericConverter {
 
 	/**
 	 * Holder for a source-to-target class pair.
+	 *
+	 * 源到目标类对的持有人。
 	 */
 	final class ConvertiblePair {
-
+		// 获取源类型
 		private final Class<?> sourceType;
-
+		// 获取目标类型
 		private final Class<?> targetType;
 
 		/**
 		 * Create a new source-to-target pair.
+		 * 创建一个 ConvertiblePair 对象
 		 * @param sourceType the source type
 		 * @param targetType the target type
+		 *
 		 */
 		public ConvertiblePair(Class<?> sourceType, Class<?> targetType) {
 			Assert.notNull(sourceType, "Source type must not be null");

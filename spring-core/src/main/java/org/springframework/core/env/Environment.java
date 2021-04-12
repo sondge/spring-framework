@@ -22,6 +22,8 @@ package org.springframework.core.env;
  * <em>properties</em>. Methods related to property access are exposed via the
  * {@link PropertyResolver} superinterface.
  *
+ * 应用程序环境概要文件和与属性访问相关的属性方法的两个关键方面通过属性解析器超接口公开
+ *
  * <p>A <em>profile</em> is a named, logical group of bean definitions to be registered
  * with the container only if the given profile is <em>active</em>. Beans may be assigned
  * to a profile whether defined in XML or via annotations; see the spring-beans 3.1 schema
@@ -76,6 +78,8 @@ public interface Environment extends PropertyResolver {
 	 * conditionally, for example based on deployment environment. Profiles can be
 	 * activated by setting {@linkplain AbstractEnvironment#ACTIVE_PROFILES_PROPERTY_NAME
 	 * "spring.profiles.active"} as a system property or by calling
+	 *
+	 * 返回此环境下的激活的配置文件集
 	 * {@link ConfigurableEnvironment#setActiveProfiles(String...)}.
 	 * <p>If no profiles have explicitly been specified as active, then any
 	 * {@linkplain #getDefaultProfiles() default profiles} will automatically be activated.
@@ -88,6 +92,8 @@ public interface Environment extends PropertyResolver {
 	/**
 	 * Return the set of profiles to be active by default when no active profiles have
 	 * been set explicitly.
+	 *
+	 * 如果未激活对应的配置文件，则返回默认的激活的配置文件集、
 	 * @see #getActiveProfiles
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 * @see AbstractEnvironment#DEFAULT_PROFILES_PROPERTY_NAME
@@ -101,6 +107,8 @@ public interface Environment extends PropertyResolver {
 	 * i.e. the method will return {@code true} if the given profile is <em>not</em> active.
 	 * For example, {@code env.acceptsProfiles("p1", "!p2")} will return {@code true} if
 	 * profile 'p1' is active or 'p2' is not active.
+	 *
+	 * 返回一个或多个给定资料的是否主动或在没有明确的情况下主动配置文件是否包含一个或多个给定资料的设置的默认配置文件如果概要始于逻辑是反向方法将返回true,如果给定的概要文件是不活跃的例如env接受档案p1 p2将返回如果配置文件p1处于活动状态或p2不处于活动状态，则为true
 	 * @throws IllegalArgumentException if called with zero arguments
 	 * or if any profile is {@code null}, empty, or whitespace only
 	 * @see #getActiveProfiles

@@ -21,6 +21,8 @@ import org.springframework.lang.Nullable;
 /**
  * A converter converts a source object of type {@code S} to a target of type {@code T}.
  *
+ * 从源类型中将类型转化至目标类型
+ *
  * <p>Implementations of this interface are thread-safe and can be shared.
  *
  * <p>Implementations may additionally implement {@link ConditionalConverter}.

@@ -16,14 +16,14 @@
 
 package org.springframework.core.convert.support;
 
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.ConverterRegistry;
+import org.springframework.lang.Nullable;
+
 import java.nio.charset.Charset;
 import java.util.Currency;
 import java.util.Locale;
 import java.util.UUID;
-
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.converter.ConverterRegistry;
-import org.springframework.lang.Nullable;
 
 /**
  * A specialization of {@link GenericConversionService} configured by default
@@ -80,6 +80,8 @@ public class DefaultConversionService extends GenericConversionService {
 
 	/**
 	 * Add converters appropriate for most environments.
+	 *
+	 * 添加适用于大多数环境的转换器。
 	 * @param converterRegistry the registry of converters to add to
 	 * (must also be castable to ConversionService, e.g. being a {@link ConfigurableConversionService})
 	 * @throws ClassCastException if the given ConverterRegistry could not be cast to a ConversionService

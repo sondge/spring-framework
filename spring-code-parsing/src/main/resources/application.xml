@@ -68,4 +68,19 @@
 		</property>
 	</bean>
 
+	<bean id="conversionService"
+		  class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<ref bean="studentConversionService"/>
+			</set>
+		</property>
+	</bean>
+
+	<bean id="studentConversionService" class="club.sondge.code.parsing.converter.StudentConversionService"/>
+
+	<bean id="student111" class="club.sondge.code.parsing.converter.Student">
+		<property name="studentService" value="18#chenssy"/>
+	</bean>
+
 </beans>

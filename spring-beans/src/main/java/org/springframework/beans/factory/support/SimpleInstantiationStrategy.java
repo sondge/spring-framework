@@ -33,6 +33,7 @@ import java.security.PrivilegedExceptionAction;
 
 /**
  * Simple object instantiation strategy for use in a BeanFactory.
+ * 使用 Bean 工厂创建实例的简单实例策略
  *
  * <p>Does not support Method Injection, although it provides hooks for subclasses
  * to override to add Method Injection support, for example by overriding methods.
@@ -42,12 +43,13 @@ import java.security.PrivilegedExceptionAction;
  * @since 1.1
  */
 public class SimpleInstantiationStrategy implements InstantiationStrategy {
-
+	// 定义一个正在执行的线程方法
 	private static final ThreadLocal<Method> currentlyInvokedFactoryMethod = new ThreadLocal<>();
 
 
 	/**
 	 * Return the factory method currently being invoked or {@code null} if none.
+	 * 返回当前线程正在执行的工厂方法
 	 * <p>Allows factory method implementations to determine whether the current
 	 * caller is the container itself as opposed to user code.
 	 */
@@ -147,6 +149,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 			@Nullable Object factoryBean, final Method factoryMethod, Object... args) {
 
 		try {
+			// 设置 Method 的访问权限
 			if (System.getSecurityManager() != null) {
 				AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
 					ReflectionUtils.makeAccessible(factoryMethod);
@@ -156,10 +159,12 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 			else {
 				ReflectionUtils.makeAccessible(factoryMethod);
 			}
-
+			// 获得原 Method 对象
 			Method priorInvokedFactoryMethod = currentlyInvokedFactoryMethod.get();
 			try {
+				// 设置当前线程正在执行的工厂方法
 				currentlyInvokedFactoryMethod.set(factoryMethod);
+				// 创建对应的 Bean 对象
 				Object result = factoryMethod.invoke(factoryBean, args);
 				if (result == null) {
 					result = new NullBean();
@@ -168,9 +173,11 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 			}
 			finally {
 				if (priorInvokedFactoryMethod != null) {
+					// 设置正在执行的工厂方法
 					currentlyInvokedFactoryMethod.set(priorInvokedFactoryMethod);
 				}
 				else {
+					// 从 ThreadLocal 中移除
 					currentlyInvokedFactoryMethod.remove();
 				}
 			}

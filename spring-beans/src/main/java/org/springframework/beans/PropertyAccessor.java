@@ -16,10 +16,10 @@
 
 package org.springframework.beans;
 
-import java.util.Map;
-
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
+
+import java.util.Map;
 
 /**
  * Common interface for classes that can access named properties
@@ -36,12 +36,15 @@ public interface PropertyAccessor {
 
 	/**
 	 * Path separator for nested properties.
+	 * 嵌套属性的路径分隔符
 	 * Follows normal Java conventions: getFoo().getBar() would be "foo.bar".
 	 */
 	String NESTED_PROPERTY_SEPARATOR = ".";
 
 	/**
 	 * Path separator for nested properties.
+	 *
+	 * 嵌套属性的分隔符
 	 * Follows normal Java conventions: getFoo().getBar() would be "foo.bar".
 	 */
 	char NESTED_PROPERTY_SEPARATOR_CHAR = '.';
@@ -49,30 +52,39 @@ public interface PropertyAccessor {
 	/**
 	 * Marker that indicates the start of a property key for an
 	 * indexed or mapped property like "person.addresses[0]".
+	 * 以索引或者已映射的属性的的开始标记
 	 */
 	String PROPERTY_KEY_PREFIX = "[";
 
 	/**
 	 * Marker that indicates the start of a property key for an
 	 * indexed or mapped property like "person.addresses[0]".
+	 *
+	 * 以索引或者已映射的属性的的开始标记
 	 */
 	char PROPERTY_KEY_PREFIX_CHAR = '[';
 
 	/**
 	 * Marker that indicates the end of a property key for an
 	 * indexed or mapped property like "person.addresses[0]".
+	 *
+	 * 以索引或者已映射的属性的的结束标记
 	 */
 	String PROPERTY_KEY_SUFFIX = "]";
 
 	/**
 	 * Marker that indicates the end of a property key for an
 	 * indexed or mapped property like "person.addresses[0]".
+	 *
+	 * 以索引或者已映射的属性的的开始标记
 	 */
 	char PROPERTY_KEY_SUFFIX_CHAR = ']';
 
 
 	/**
 	 * Determine whether the specified property is readable.
+	 *
+	 * 表示给定的属性是否是可读属性
 	 * <p>Returns {@code false} if the property doesn't exist.
 	 * @param propertyName the property to check
 	 * (may be a nested path and/or an indexed/mapped property)
@@ -82,6 +94,8 @@ public interface PropertyAccessor {
 
 	/**
 	 * Determine whether the specified property is writable.
+	 *
+	 * 表示对应的属性是否是可写属性
 	 * <p>Returns {@code false} if the property doesn't exist.
 	 * @param propertyName the property to check
 	 * (may be a nested path and/or an indexed/mapped property)
@@ -93,6 +107,8 @@ public interface PropertyAccessor {
 	 * Determine the property type for the specified property,
 	 * either checking the property descriptor or checking the value
 	 * in case of an indexed or mapped element.
+	 *
+	 * 根据属性名称获取属性的类型
 	 * @param propertyName the property to check
 	 * (may be a nested path and/or an indexed/mapped property)
 	 * @return the property type for the particular property,
@@ -105,7 +121,11 @@ public interface PropertyAccessor {
 
 	/**
 	 * Return a type descriptor for the specified property:
+	 *
+	 * 返回指定属性的类型描述器
 	 * preferably from the read method, falling back to the write method.
+	 *
+	 * 最好从读取方法转回写入方法。
 	 * @param propertyName the property to check
 	 * (may be a nested path and/or an indexed/mapped property)
 	 * @return the property type for the particular property,
@@ -118,6 +138,8 @@ public interface PropertyAccessor {
 
 	/**
 	 * Get the current value of the specified property.
+	 *
+	 * 从给定的属性名称中获取当前的属性值
 	 * @param propertyName the name of the property to get the value of
 	 * (may be a nested path and/or an indexed/mapped property)
 	 * @return the value of the property
@@ -131,6 +153,8 @@ public interface PropertyAccessor {
 
 	/**
 	 * Set the specified value as current property value.
+	 *
+	 * 从给定的值和给定的名称设置对应的属性值
 	 * @param propertyName the name of the property to set the value of
 	 * (may be a nested path and/or an indexed/mapped property)
 	 * @param value the new value
@@ -143,6 +167,8 @@ public interface PropertyAccessor {
 
 	/**
 	 * Set the specified value as current property value.
+	 *
+	 * 从给定的 PropertyValue 值，设置对应对应的属性值
 	 * @param pv an object containing the new property value
 	 * @throws InvalidPropertyException if there is no such property or
 	 * if the property isn't writable
@@ -153,6 +179,8 @@ public interface PropertyAccessor {
 
 	/**
 	 * Perform a batch update from a Map.
+	 *
+	 * 从给定的 map 中批量设置属性
 	 * <p>Bulk updates from PropertyValues are more powerful: This method is
 	 * provided for convenience. Behavior will be identical to that of
 	 * the {@link #setPropertyValues(PropertyValues)} method.
@@ -169,6 +197,7 @@ public interface PropertyAccessor {
 
 	/**
 	 * The preferred way to perform a batch update.
+	 * 从 PropertyValues 中批量设置属性值
 	 * <p>Note that performing a batch update differs from performing a single update,
 	 * in that an implementation of this class will continue to update properties
 	 * if a <b>recoverable</b> error (such as a type mismatch, but <b>not</b> an
@@ -190,6 +219,8 @@ public interface PropertyAccessor {
 
 	/**
 	 * Perform a batch update with more control over behavior.
+	 *
+	 * 批量更新属性值（是否忽略我们未知的属性）
 	 * <p>Note that performing a batch update differs from performing a single update,
 	 * in that an implementation of this class will continue to update properties
 	 * if a <b>recoverable</b> error (such as a type mismatch, but <b>not</b> an
@@ -212,6 +243,8 @@ public interface PropertyAccessor {
 
 	/**
 	 * Perform a batch update with full control over behavior.
+	 *
+	 * 批量更新属性值（是否忽略我们未知的属性和无效的属性）
 	 * <p>Note that performing a batch update differs from performing a single update,
 	 * in that an implementation of this class will continue to update properties
 	 * if a <b>recoverable</b> error (such as a type mismatch, but <b>not</b> an

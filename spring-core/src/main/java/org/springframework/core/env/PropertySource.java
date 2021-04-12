@@ -58,16 +58,18 @@ import org.springframework.util.ObjectUtils;
  * @see org.springframework.context.annotation.PropertySource
  */
 public abstract class PropertySource<T> {
-
+	// 定义日志信息
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	// 定义属性资源的名称
 	protected final String name;
-
+	// 对应的属性资源的值
 	protected final T source;
 
 
 	/**
 	 * Create a new {@code PropertySource} with the given name and source object.
+	 *
+	 * 根据给定的名称和资源值创建一个新的属性资源
 	 * @param name the associated name
 	 * @param source the source object
 	 */
@@ -80,6 +82,8 @@ public abstract class PropertySource<T> {
 
 	/**
 	 * Create a new {@code PropertySource} with the given name and with a new
+	 *
+	 * 根据给定的名称定义指定的资源
 	 * {@code Object} instance as the underlying source.
 	 * <p>Often useful in testing scenarios when creating anonymous implementations
 	 * that never query an actual source but rather return hard-coded values.
@@ -92,6 +96,8 @@ public abstract class PropertySource<T> {
 
 	/**
 	 * Return the name of this {@code PropertySource}.
+	 *
+	 * 获取属性资源的名称
 	 */
 	public String getName() {
 		return this.name;
@@ -99,6 +105,8 @@ public abstract class PropertySource<T> {
 
 	/**
 	 * Return the underlying source object for this {@code PropertySource}.
+	 *
+	 * 获取对应的资源
 	 */
 	public T getSource() {
 		return this.source;
@@ -106,6 +114,8 @@ public abstract class PropertySource<T> {
 
 	/**
 	 * Return whether this {@code PropertySource} contains the given name.
+	 *
+	 * 从给定的名称中判断是否包含对应的属性
 	 * <p>This implementation simply checks for a {@code null} return value
 	 * from {@link #getProperty(String)}. Subclasses may wish to implement
 	 * a more efficient algorithm if possible.

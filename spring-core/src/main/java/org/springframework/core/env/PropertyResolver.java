@@ -21,6 +21,8 @@ import org.springframework.lang.Nullable;
 /**
  * Interface for resolving properties against any underlying source.
  *
+ * 用于针对任何基础源解析属性的接口。
+ *
  * @author Chris Beams
  * @author Juergen Hoeller
  * @since 3.1
@@ -31,12 +33,16 @@ public interface PropertyResolver {
 
 	/**
 	 * Return whether the given property key is available for resolution,
+	 *
+	 * 返回是否包含给定的属性
 	 * i.e. if the value for the given key is not {@code null}.
 	 */
 	boolean containsProperty(String key);
 
 	/**
 	 * Return the property value associated with the given key,
+	 *
+	 * 从给定的 key 获取对应的属性值，如果不存在就返回空
 	 * or {@code null} if the key cannot be resolved.
 	 * @param key the property name to resolve
 	 * @see #getProperty(String, String)
@@ -48,6 +54,8 @@ public interface PropertyResolver {
 
 	/**
 	 * Return the property value associated with the given key, or
+	 *
+	 * 从给定的  key 返回对应的属性值，如果不存在就返回默认值
 	 * {@code defaultValue} if the key cannot be resolved.
 	 * @param key the property name to resolve
 	 * @param defaultValue the default value to return if no value is found
@@ -58,6 +66,8 @@ public interface PropertyResolver {
 
 	/**
 	 * Return the property value associated with the given key,
+	 *
+	 * 返回特定类型的属性值，如果不存在就返回为空
 	 * or {@code null} if the key cannot be resolved.
 	 * @param key the property name to resolve
 	 * @param targetType the expected type of the property value
@@ -68,6 +78,8 @@ public interface PropertyResolver {
 
 	/**
 	 * Return the property value associated with the given key,
+	 *
+	 * 根据给定的 key，返回对应的属性，如果不存在就返回默认值
 	 * or {@code defaultValue} if the key cannot be resolved.
 	 * @param key the property name to resolve
 	 * @param targetType the expected type of the property value
@@ -78,6 +90,8 @@ public interface PropertyResolver {
 
 	/**
 	 * Return the property value associated with the given key (never {@code null}).
+	 *
+	 * 返回与给定的 key 关联的属性值。如果获取不到就抛出 IllegalStateException
 	 * @throws IllegalStateException if the key cannot be resolved
 	 * @see #getRequiredProperty(String, Class)
 	 */
@@ -85,6 +99,8 @@ public interface PropertyResolver {
 
 	/**
 	 * Return the property value associated with the given key, converted to the given
+	 *
+	 * 根据给定的值获取属性，如果不存在就抛出 IllegalStateException
 	 * targetType (never {@code null}).
 	 * @throws IllegalStateException if the given key cannot be resolved
 	 */
@@ -94,6 +110,8 @@ public interface PropertyResolver {
 	 * Resolve ${...} placeholders in the given text, replacing them with corresponding
 	 * property values as resolved by {@link #getProperty}. Unresolvable placeholders with
 	 * no default value are ignored and passed through unchanged.
+	 *
+	 * 替换文本中的占位符 (${key}) 的属性值，找不到不解析
 	 * @param text the String to resolve
 	 * @return the resolved String (never {@code null})
 	 * @throws IllegalArgumentException if given text is {@code null}
@@ -105,6 +123,8 @@ public interface PropertyResolver {
 	 * Resolve ${...} placeholders in the given text, replacing them with corresponding
 	 * property values as resolved by {@link #getProperty}. Unresolvable placeholders with
 	 * no default value will cause an IllegalArgumentException to be thrown.
+	 *
+	 * 替换文本中的占位符（${key}）到属性值，找不到抛出异常IllegalArgumentException
 	 * @return the resolved String (never {@code null})
 	 * @throws IllegalArgumentException if given text is {@code null}
 	 * or if any placeholders are unresolvable

@@ -16,15 +16,19 @@
 
 package org.springframework.beans;
 
-import java.lang.reflect.Field;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
 
+import java.lang.reflect.Field;
+
 /**
- * Interface that defines type conversion methods. Typically (but not necessarily)
- * implemented in conjunction with the {@link PropertyEditorRegistry} interface.
+ * Interface that defines type conversion methods.
+ * 定义类型转化的接口
+ * Typically (but not necessarily) implemented in conjunction with the {@link PropertyEditorRegistry} interface.
+ * 通常与（但是不必须）  PropertyEditorRegistry 接口使用
+ *
+ *
  *
  * <p><b>Note:</b> Since TypeConverter implementations are typically based on
  * {@link java.beans.PropertyEditor PropertyEditors} which aren't thread-safe,
@@ -39,6 +43,8 @@ public interface TypeConverter {
 
 	/**
 	 * Convert the value to the required type (if necessary from a String).
+	 *
+	 * 根据指定的类型转化这个值
 	 * <p>Conversions from String to any type will typically use the {@code setAsText}
 	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.
 	 * @param value the value to convert
@@ -56,6 +62,7 @@ public interface TypeConverter {
 
 	/**
 	 * Convert the value to the required type (if necessary from a String).
+	 * 从给定的类型和给定的值以及方法参数转化对应的值
 	 * <p>Conversions from String to any type will typically use the {@code setAsText}
 	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.
 	 * @param value the value to convert
@@ -76,6 +83,8 @@ public interface TypeConverter {
 
 	/**
 	 * Convert the value to the required type (if necessary from a String).
+	 *
+	 * 从给定的类型和给定的值以及方法参数转化对应的值
 	 * <p>Conversions from String to any type will typically use the {@code setAsText}
 	 * method of the PropertyEditor class, or a Spring Converter in a ConversionService.
 	 * @param value the value to convert

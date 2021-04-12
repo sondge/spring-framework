@@ -23,6 +23,8 @@ import org.springframework.core.convert.TypeDescriptor;
  * conditionally execute based on attributes of the {@code source} and {@code target}
  * {@link TypeDescriptor}.
  *
+ * 判断源类型和目标类型是否可以转换
+ *
  * <p>Often used to selectively match custom conversion logic based on the presence of a
  * field or class-level characteristic, such as an annotation or method. For example, when
  * converting from a String field to a Date field, an implementation might return

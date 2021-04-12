@@ -16,16 +16,8 @@
 
 package org.springframework.core.env;
 
-import java.security.AccessControlException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.SpringProperties;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.lang.Nullable;
@@ -33,12 +25,21 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.security.AccessControlException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Abstract base class for {@link Environment} implementations. Supports the notion of
  * reserved default profile names and enables specifying active and default profiles
  * through the {@link #ACTIVE_PROFILES_PROPERTY_NAME} and
  * {@link #DEFAULT_PROFILES_PROPERTY_NAME} properties.
  *
+ *
+ * 环境的抽象实现
  * <p>Concrete subclasses differ primarily on which {@link PropertySource} objects they
  * add by default. {@code AbstractEnvironment} adds none. Subclasses should contribute
  * property sources through the protected {@link #customizePropertySources(MutablePropertySources)}
@@ -57,6 +58,8 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	/**
 	 * System property that instructs Spring to ignore system environment variables,
 	 * i.e. to never attempt to retrieve such a variable via {@link System#getenv()}.
+	 *
+	 * 忽略的属性名称
 	 * <p>The default is "false", falling back to system environment variable checks if a
 	 * Spring environment property (e.g. a placeholder in a configuration String) isn't
 	 * resolvable otherwise. Consider switching this flag to "true" if you experience
@@ -69,6 +72,8 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	/**
 	 * Name of property to set to specify active profiles: {@value}. Value may be comma
 	 * delimited.
+	 *
+	 * 激活的属性名
 	 * <p>Note that certain shell environments such as Bash disallow the use of the period
 	 * character in variable names. Assuming that Spring's {@link SystemEnvironmentPropertySource}
 	 * is in use, this property may be specified as an environment variable as
@@ -80,6 +85,8 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	/**
 	 * Name of property to set to specify profiles active by default: {@value}. Value may
 	 * be comma delimited.
+	 *
+	 * 默认的 profile 属性名
 	 * <p>Note that certain shell environments such as Bash disallow the use of the period
 	 * character in variable names. Assuming that Spring's {@link SystemEnvironmentPropertySource}
 	 * is in use, this property may be specified as an environment variable as
@@ -92,6 +99,8 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * Name of reserved default profile name: {@value}. If no default profile names are
 	 * explicitly and no active profile names are explicitly set, this profile will
 	 * automatically be activated by default.
+	 *
+	 * 预先设置 profile 名称
 	 * @see #getReservedDefaultProfiles
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 * @see ConfigurableEnvironment#setActiveProfiles
@@ -100,21 +109,23 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 */
 	protected static final String RESERVED_DEFAULT_PROFILE_NAME = "default";
 
-
+	// 对应的日志解析器
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	// 获取对应的激活的属性
 	private final Set<String> activeProfiles = new LinkedHashSet<>();
-
+	// 获取默认的属性值
 	private final Set<String> defaultProfiles = new LinkedHashSet<>(getReservedDefaultProfiles());
-
+	// 属性资源
 	private final MutablePropertySources propertySources = new MutablePropertySources();
-
+	// 配置的属性解析器
 	private final ConfigurablePropertyResolver propertyResolver =
 			new PropertySourcesPropertyResolver(this.propertySources);
 
 
 	/**
 	 * Create a new {@code Environment} instance, calling back to
+	 *
+	 * 创建一个新的 实例，使用钩子方法实现此类
 	 * {@link #customizePropertySources(MutablePropertySources)} during construction to
 	 * allow subclasses to contribute or manipulate {@link PropertySource} instances as
 	 * appropriate.
@@ -207,6 +218,8 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * Return the set of reserved default profile names. This implementation returns
 	 * {@value #RESERVED_DEFAULT_PROFILE_NAME}. Subclasses may override in order to
 	 * customize the set of reserved names.
+	 *
+	 * 获取预先设置的默认的 profile 集合
 	 * @see #RESERVED_DEFAULT_PROFILE_NAME
 	 * @see #doGetDefaultProfiles()
 	 */
@@ -220,6 +233,7 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	//---------------------------------------------------------------------
 
 	@Override
+	// 获取激活的 profile 数组
 	public String[] getActiveProfiles() {
 		return StringUtils.toStringArray(doGetActiveProfiles());
 	}
@@ -229,32 +243,46 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * {@link #setActiveProfiles} or if the current set of active profiles
 	 * is empty, check for the presence of the {@value #ACTIVE_PROFILES_PROPERTY_NAME}
 	 * property and assign its value to the set of active profiles.
+	 *
+	 * 获取激活的 profile 的属性值
 	 * @see #getActiveProfiles()
 	 * @see #ACTIVE_PROFILES_PROPERTY_NAME
 	 */
 	protected Set<String> doGetActiveProfiles() {
+		// 加锁
 		synchronized (this.activeProfiles) {
+			// 如果已经激活的 profile 数组为空
 			if (this.activeProfiles.isEmpty()) {
+				// 获取已经激活的属性
 				String profiles = getProperty(ACTIVE_PROFILES_PROPERTY_NAME);
+				// 如果有长度
 				if (StringUtils.hasText(profiles)) {
+					// 设置已经激活的数组
 					setActiveProfiles(StringUtils.commaDelimitedListToStringArray(
 							StringUtils.trimAllWhitespace(profiles)));
 				}
 			}
+			// 返回这个激活的属性值
 			return this.activeProfiles;
 		}
 	}
 
 	@Override
+	// 设置默认的属性
 	public void setActiveProfiles(String... profiles) {
+		// 断言对应的属性值列表
 		Assert.notNull(profiles, "Profile array must not be null");
 		if (logger.isDebugEnabled()) {
 			logger.debug("Activating profiles " + Arrays.asList(profiles));
 		}
+		// 加锁
 		synchronized (this.activeProfiles) {
+			// 清除对应的属性值
 			this.activeProfiles.clear();
 			for (String profile : profiles) {
+				// 校验对应的属性值
 				validateProfile(profile);
+				// 新增对应的属性值
 				this.activeProfiles.add(profile);
 			}
 		}
@@ -265,15 +293,20 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Activating profile '" + profile + "'");
 		}
+		// 校验激活的属性值
 		validateProfile(profile);
+		// 获取对应的属性
 		doGetActiveProfiles();
+		// 加锁
 		synchronized (this.activeProfiles) {
+			// 加入对应的 profile
 			this.activeProfiles.add(profile);
 		}
 	}
 
 
 	@Override
+	// 获取默认的舒芯宝
 	public String[] getDefaultProfiles() {
 		return StringUtils.toStringArray(doGetDefaultProfiles());
 	}

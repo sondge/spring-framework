@@ -75,6 +75,8 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * Specify the set of profiles active for this {@code Environment}. Profiles are
 	 * evaluated during container bootstrap to determine whether bean definitions
 	 * should be registered with the container.
+	 *
+	 * 指定该环境下的 profile 集
 	 * <p>Any existing active profiles will be replaced with the given arguments; call
 	 * with zero arguments to clear the current set of active profiles. Use
 	 * {@link #addActiveProfile} to add a profile while preserving the existing set.
@@ -88,6 +90,8 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 
 	/**
 	 * Add a profile to the current set of active profiles.
+	 *
+	 * 增加该环境下的 profile
 	 * @throws IllegalArgumentException if the profile is null, empty or whitespace-only
 	 * @see #setActiveProfiles
 	 */
@@ -96,6 +100,8 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	/**
 	 * Specify the set of profiles to be made active by default if no other profiles
 	 * are explicitly made active through {@link #setActiveProfiles}.
+	 *
+	 * 设置默认的环境集
 	 * @throws IllegalArgumentException if any profile is null, empty or whitespace-only
 	 * @see AbstractEnvironment#DEFAULT_PROFILES_PROPERTY_NAME
 	 */
@@ -106,6 +112,8 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * allowing for manipulation of the set of {@link PropertySource} objects that should
 	 * be searched when resolving properties against this {@code Environment} object.
 	 * The various {@link MutablePropertySources} methods such as
+	 *
+	 * 返回此环境下的 PropertySources
 	 * {@link MutablePropertySources#addFirst addFirst},
 	 * {@link MutablePropertySources#addLast addLast},
 	 * {@link MutablePropertySources#addBefore addBefore} and
@@ -126,6 +134,8 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * properties map as a default {@link PropertySource} to be searched. Therefore, it is
 	 * recommended that this method not be used directly unless bypassing other property
 	 * sources is expressly intended.
+	 *
+	 * 尝试着返回 System.getProperties() 的值，若失败则返回通过 System.getProperties(string) 的来访问各个键的映射
 	 * <p>Calls to {@link Map#get(Object)} on the Map returned will never throw
 	 * {@link IllegalAccessException}; in cases where the SecurityManager forbids access
 	 * to a property, {@code null} will be returned and an INFO-level log message will be
@@ -141,6 +151,8 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * environment map as a default {@link PropertySource} to be searched. Therefore, it
 	 * is recommended that this method not be used directly unless bypassing other
 	 * property sources is expressly intended.
+	 *
+	 * 尝试着通过 System.env() 获取值，若失败则返回通过 System.getenv(string) 的来访问各个键的映射
 	 * <p>Calls to {@link Map#get(Object)} on the Map returned will never throw
 	 * {@link IllegalAccessException}; in cases where the SecurityManager forbids access
 	 * to a property, {@code null} will be returned and an INFO-level log message will be
@@ -156,6 +168,8 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * discarded. This has the effect of allowing overriding of property sources by the
 	 * child as well as avoiding redundant searches through common property source types,
 	 * e.g. system environment and system properties.
+	 *
+	 * 合并对应的环境配置值
 	 * <p>Active and default profile names are also filtered for duplicates, to avoid
 	 * confusion and redundant storage.
 	 * <p>The parent environment remains unmodified in any case. Note that any changes to

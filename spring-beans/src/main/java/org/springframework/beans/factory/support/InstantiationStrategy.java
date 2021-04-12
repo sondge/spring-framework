@@ -16,16 +16,17 @@
 
 package org.springframework.beans.factory.support;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.lang.Nullable;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
 /**
  * Interface responsible for creating instances corresponding to a root bean definition.
  *
+ * 接口的责任是创建实例从相应的一个 root bean definition
  * <p>This is pulled out into a strategy as various approaches are possible,
  * including using CGLIB to create subclasses on the fly to support Method Injection.
  *
@@ -37,6 +38,8 @@ public interface InstantiationStrategy {
 
 	/**
 	 * Return an instance of the bean with the given name in this factory.
+	 *
+	 * 在 bean 工厂中根据给定的名称返回的 bean 实例，这个是使用默认构造方法
 	 * @param bd the bean definition
 	 * @param beanName the name of the bean when it is created in this context.
 	 * The name can be {@code null} if we are autowiring a bean which doesn't
@@ -51,6 +54,8 @@ public interface InstantiationStrategy {
 	/**
 	 * Return an instance of the bean with the given name in this factory,
 	 * creating it via the given constructor.
+	 *
+	 * 根据给定的构造器和给定的名称在工厂中创建一个 bean 的实例
 	 * @param bd the bean definition
 	 * @param beanName the name of the bean when it is created in this context.
 	 * The name can be {@code null} if we are autowiring a bean which doesn't
@@ -67,6 +72,8 @@ public interface InstantiationStrategy {
 	/**
 	 * Return an instance of the bean with the given name in this factory,
 	 * creating it via the given factory method.
+	 *
+	 * 根据给定的 bean 名称和给定的工厂方法在工厂中创建对应的实例
 	 * @param bd the bean definition
 	 * @param beanName the name of the bean when it is created in this context.
 	 * The name can be {@code null} if we are autowiring a bean which doesn't

@@ -16,16 +16,16 @@
 
 package org.springframework.core.convert.support;
 
-import java.lang.reflect.Array;
-import java.util.Collections;
-import java.util.Set;
-
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Array;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Converts a comma-delimited String to an Array.
@@ -63,13 +63,18 @@ final class StringToArrayConverter implements ConditionalGenericConverter {
 			return null;
 		}
 		String string = (String) source;
+		// 按照 , 数组分隔
 		String[] fields = StringUtils.commaDelimitedListToStringArray(string);
+		// 获得对应的类型对象
 		TypeDescriptor targetElementType = targetType.getElementTypeDescriptor();
 		Assert.state(targetElementType != null, "No target element type");
+		// 创建目标数组
 		Object target = Array.newInstance(targetElementType.getType(), fields.length);
 		for (int i = 0; i < fields.length; i++) {
 			String sourceElement = fields[i];
+			// 执行转换
 			Object targetElement = this.conversionService.convert(sourceElement.trim(), sourceType, targetElementType);
+			// 设置到 target 中
 			Array.set(target, i, targetElement);
 		}
 		return target;

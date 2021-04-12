@@ -22,6 +22,8 @@ import org.springframework.lang.Nullable;
  * {@link PropertyResolver} implementation that resolves property values against
  * an underlying set of {@link PropertySources}.
  *
+ * PropertyResolver 的实现，它对一组 PropertySources 提供属性解析服务
+ *
  * @author Chris Beams
  * @author Juergen Hoeller
  * @since 3.1
@@ -32,11 +34,14 @@ import org.springframework.lang.Nullable;
 public class PropertySourcesPropertyResolver extends AbstractPropertyResolver {
 
 	@Nullable
+	// 定义对应的属性资源器
 	private final PropertySources propertySources;
 
 
 	/**
 	 * Create a new resolver against the given property sources.
+	 *
+	 * 从给定的资源创建一个新的解析器
 	 * @param propertySources the set of {@link PropertySource} objects to use
 	 */
 	public PropertySourcesPropertyResolver(@Nullable PropertySources propertySources) {
@@ -45,6 +50,7 @@ public class PropertySourcesPropertyResolver extends AbstractPropertyResolver {
 
 
 	@Override
+	// 根据给定的 key 是否包含对应的属性
 	public boolean containsProperty(String key) {
 		if (this.propertySources != null) {
 			for (PropertySource<?> propertySource : this.propertySources) {
@@ -58,6 +64,7 @@ public class PropertySourcesPropertyResolver extends AbstractPropertyResolver {
 
 	@Override
 	@Nullable
+	// 从给定的 key 获取对应的属性
 	public String getProperty(String key) {
 		return getProperty(key, String.class, true);
 	}
@@ -70,23 +77,30 @@ public class PropertySourcesPropertyResolver extends AbstractPropertyResolver {
 
 	@Override
 	@Nullable
+	// 获取对应的属性最为原始的字符串
 	protected String getPropertyAsRawString(String key) {
 		return getProperty(key, String.class, false);
 	}
 
 	@Nullable
+	// 获取对应的属性
 	protected <T> T getProperty(String key, Class<T> targetValueType, boolean resolveNestedPlaceholders) {
+		// 如果对应的属性资源不为空
 		if (this.propertySources != null) {
+			// 循环遍历对应的属性资源
 			for (PropertySource<?> propertySource : this.propertySources) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Searching for key '" + key + "' in PropertySource '" +
 							propertySource.getName() + "'");
 				}
+				// 从给定的 key 获取对应的属性值
 				Object value = propertySource.getProperty(key);
 				if (value != null) {
+					// 如果解决嵌套的占位符，解析对应的占位符
 					if (resolveNestedPlaceholders && value instanceof String) {
 						value = resolveNestedPlaceholders((String) value);
 					}
+					// 如果没有找到对应的属性值，则打印对应的属性值
 					logKeyFound(key, propertySource, value);
 					return convertValueIfNecessary(value, targetValueType);
 				}

@@ -41,6 +41,8 @@ import java.lang.reflect.Method;
 /**
  * Default object instantiation strategy for use in BeanFactories.
  *
+ * 使用 BeanFactory 默认的 object 实例的对象
+ *
  * <p>Uses CGLIB to generate subclasses dynamically if methods need to be
  * overridden by the container to implement <em>Method Injection</em>.
  *
@@ -53,13 +55,18 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 
 	/**
 	 * Index in the CGLIB callback array for passthrough behavior,
+	 *
+	 * 直通性 CGLIB 回调数组的索引
 	 * in which case the subclass won't override the original class.
+	 * 在这种情况下，子类不能覆盖这个原始类的方法
 	 */
 	private static final int PASSTHROUGH = 0;
 
 	/**
 	 * Index in the CGLIB callback array for a method that should
 	 * be overridden to provide <em>method lookup</em>.
+	 *
+	 * 在CGLIB回调数组中的索引，用于应提供<em>方法查找<em>的方法应被覆盖。
 	 */
 	private static final int LOOKUP_OVERRIDE = 1;
 
@@ -88,6 +95,8 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 	/**
 	 * An inner class created for historical reasons to avoid external CGLIB dependency
 	 * in Spring versions earlier than 3.2.
+	 *
+	 *
 	 */
 	private static class CglibSubclassCreator {
 
@@ -152,13 +161,16 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		private Class<?> createEnhancedSubclass(RootBeanDefinition beanDefinition) {
 			// 定义一个 增强型子类
 			Enhancer enhancer = new Enhancer();
+			// 设置对应的 bean  的类型
 			enhancer.setSuperclass(beanDefinition.getBeanClass());
 			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
 			if (this.owner instanceof ConfigurableBeanFactory) {
 				ClassLoader cl = ((ConfigurableBeanFactory) this.owner).getBeanClassLoader();
 				enhancer.setStrategy(new ClassLoaderAwareGeneratorStrategy(cl));
 			}
+			// 过滤，自定义类型来指定调用的子类
 			enhancer.setCallbackFilter(new MethodOverrideCallbackFilter(beanDefinition));
+			// 设置回调类型的
 			enhancer.setCallbackTypes(CALLBACK_TYPES);
 			return enhancer.createClass();
 		}
@@ -208,10 +220,12 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 
 		@Override
 		public int accept(Method method) {
+			// 获取对应的  重载对象
 			MethodOverride methodOverride = getBeanDefinition().getMethodOverrides().getOverride(method);
 			if (logger.isTraceEnabled()) {
 				logger.trace("MethodOverride for " + method + ": " + methodOverride);
 			}
+			// 记录 methodOverride
 			if (methodOverride == null) {
 				return PASSTHROUGH;
 			}
