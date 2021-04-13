@@ -16,14 +16,6 @@
 
 package org.springframework.context.event;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
@@ -39,6 +31,14 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract implementation of the {@link ApplicationEventMulticaster} interface,
@@ -101,13 +101,17 @@ public abstract class AbstractApplicationEventMulticaster
 
 	@Override
 	public void addApplicationListener(ApplicationListener<?> listener) {
+		//  新增监听器
 		synchronized (this.defaultRetriever) {
 			// Explicitly remove target for a proxy, if registered already,
 			// in order to avoid double invocations of the same listener.
+			// 获取单例的目标
 			Object singletonTarget = AopProxyUtils.getSingletonTarget(listener);
+			// 如果单例是 ApplicationListener
 			if (singletonTarget instanceof ApplicationListener) {
 				this.defaultRetriever.applicationListeners.remove(singletonTarget);
 			}
+			// 将监听器加入集合中
 			this.defaultRetriever.applicationListeners.add(listener);
 			this.retrieverCache.clear();
 		}
@@ -115,6 +119,7 @@ public abstract class AbstractApplicationEventMulticaster
 
 	@Override
 	public void addApplicationListenerBean(String listenerBeanName) {
+		// 将监听器名称加入对应的  set 中
 		synchronized (this.defaultRetriever) {
 			this.defaultRetriever.applicationListenerBeans.add(listenerBeanName);
 			this.retrieverCache.clear();

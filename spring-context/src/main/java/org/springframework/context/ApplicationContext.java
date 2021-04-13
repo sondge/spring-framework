@@ -28,6 +28,8 @@ import org.springframework.lang.Nullable;
  * This is read-only while the application is running, but may be
  * reloaded if the implementation supports this.
  *
+ * 对应应用程序提供配置的中央接口，这个应用在运行时，这个一个仅可读文件，但是可以通过重新加载实现致辞
+ *
  * <p>An ApplicationContext provides:
  * <ul>
  * <li>Bean factory methods for accessing application components.
@@ -60,6 +62,8 @@ public interface ApplicationContext extends EnvironmentCapable, ListableBeanFact
 
 	/**
 	 * Return the unique id of this application context.
+	 *
+	 * 获取这个应用程序的唯一编号
 	 * @return the unique id of the context, or {@code null} if none
 	 */
 	@Nullable
@@ -67,18 +71,24 @@ public interface ApplicationContext extends EnvironmentCapable, ListableBeanFact
 
 	/**
 	 * Return a name for the deployed application that this context belongs to.
+	 *
+	 * 获取这个上下文构建的应用程序的名称
 	 * @return a name for the deployed application, or the empty String by default
 	 */
 	String getApplicationName();
 
 	/**
 	 * Return a friendly name for this context.
+	 *
+	 * 返回这个上下文的友好的名称
 	 * @return a display name for this context (never {@code null})
 	 */
 	String getDisplayName();
 
 	/**
 	 * Return the timestamp when this context was first loaded.
+	 *
+	 * 获取启动日期
 	 * @return the timestamp (ms) when this context was first loaded
 	 */
 	long getStartupDate();
@@ -86,6 +96,8 @@ public interface ApplicationContext extends EnvironmentCapable, ListableBeanFact
 	/**
 	 * Return the parent context, or {@code null} if there is no parent
 	 * and this is the root of the context hierarchy.
+	 *
+	 * 获取父 ApplicationContext
 	 * @return the parent context, or {@code null} if there is no parent
 	 */
 	@Nullable
@@ -93,6 +105,8 @@ public interface ApplicationContext extends EnvironmentCapable, ListableBeanFact
 
 	/**
 	 * Expose AutowireCapableBeanFactory functionality for this context.
+	 *
+	 * 获取自动扩展的上下文的自动注入
 	 * <p>This is not typically used by application code, except for the purpose of
 	 * initializing bean instances that live outside of the application context,
 	 * applying the Spring bean lifecycle (fully or partly) to them.

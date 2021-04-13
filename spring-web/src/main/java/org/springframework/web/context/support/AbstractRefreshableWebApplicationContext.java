@@ -16,9 +16,6 @@
 
 package org.springframework.web.context.support;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.AbstractRefreshableConfigApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -33,6 +30,9 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.ServletConfigAware;
 import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 /**
  * {@link org.springframework.context.support.AbstractRefreshableApplicationContext}
@@ -166,11 +166,15 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 	 */
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		// 将 ServletContextAwareProcessor 添加到 beanFactory 容器中，改 processor 实现 BeanPostProcessor 接口，
+		// 主要是将 ServletContext 传递给实现了 ServletContextAware 接口的 Bean
 		beanFactory.addBeanPostProcessor(new ServletContextAwareProcessor(this.servletContext, this.servletConfig));
+		// 忽略注入 ServletContextAware、ServletConfigAware
 		beanFactory.ignoreDependencyInterface(ServletContextAware.class);
 		beanFactory.ignoreDependencyInterface(ServletConfigAware.class);
-
+		// 注册 Web 应用特定的域到 BeanFactory 中，以便 WebApplicationContext 可以使用他们。比如 request, session, globalSession、application
 		WebApplicationContextUtils.registerWebApplicationScopes(beanFactory, this.servletContext);
+		// 注册 WEB 应用特定的 Environment bean 到 beanFactory 中，以便 WebApplicationContext 可以使用它们。如：”contextParameters”, “contextAttributes”
 		WebApplicationContextUtils.registerEnvironmentBeans(beanFactory, this.servletContext, this.servletConfig);
 	}
 

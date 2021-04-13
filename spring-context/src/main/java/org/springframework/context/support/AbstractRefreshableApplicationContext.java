@@ -119,15 +119,21 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
+		// 判断原来是否有 bean 工厂，如果有需要销毁 Bean， 并且需要关闭 BeanFactory
 		if (hasBeanFactory()) {  // 判断原来是否有 bean 工厂
 			destroyBeans();  // 销毁 bean
 			closeBeanFactory();  // 关闭 bean 工厂
 		}
 		try {
+			// 尝试着创建 Bean 工厂
 			DefaultListableBeanFactory beanFactory = createBeanFactory(); // 创建 bean 工厂
+			// 设置 BeanFactory 的唯一编码
 			beanFactory.setSerializationId(getId()); // 设置序列化 id
+			// 定制 BeanFactory 设置的相关属性
 			customizeBeanFactory(beanFactory); // 加载定制 Bean 工厂
+			// 加载 BeanDefinition
 			loadBeanDefinitions(beanFactory); // 加载用户自定义 bean
+			// 设置 Context 的 BeanFactory
 			this.beanFactory = beanFactory;  // 配置工厂
 		}
 		catch (IOException ex) {
@@ -163,11 +169,13 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 
 	@Override
 	public final ConfigurableListableBeanFactory getBeanFactory() {
+		// 获取 BeanFactory
 		DefaultListableBeanFactory beanFactory = this.beanFactory; // 获取 Bean 工厂
 		if (beanFactory == null) {
 			throw new IllegalStateException("BeanFactory not initialized or already closed - " +
 					"call 'refresh' before accessing beans via the ApplicationContext");
 		}
+		// 直接返回对应的 BeanFactory
 		return beanFactory;
 	}
 

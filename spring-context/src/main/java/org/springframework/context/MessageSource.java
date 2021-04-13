@@ -16,13 +16,15 @@
 
 package org.springframework.context;
 
-import java.util.Locale;
-
 import org.springframework.lang.Nullable;
+
+import java.util.Locale;
 
 /**
  * Strategy interface for resolving messages, with support for the parameterization
  * and internationalization of such messages.
+ *
+ * 解决 message 的国际化相关的接口信息
  *
  * <p>Spring provides two out-of-the-box implementations for production:
  * <ul>
@@ -41,6 +43,8 @@ public interface MessageSource {
 
 	/**
 	 * Try to resolve the message. Return default message if no message was found.
+	 *
+	 * 尝试解析 message ，如果没有发现 message，则返回默认的信息
 	 * @param code the message code to look up, e.g. 'calculator.noRateSet'.
 	 * MessageSource users are encouraged to base message names on qualified class
 	 * or package names, avoiding potential conflicts and ensuring maximum clarity.
@@ -59,6 +63,8 @@ public interface MessageSource {
 
 	/**
 	 * Try to resolve the message. Treat as an error if the message can't be found.
+	 *
+	 * 尝试着解析 message，如果没有则抛出错误信息
 	 * @param code the message code to look up, e.g. 'calculator.noRateSet'.
 	 * MessageSource users are encouraged to base message names on qualified class
 	 * or package names, avoiding potential conflicts and ensuring maximum clarity.
