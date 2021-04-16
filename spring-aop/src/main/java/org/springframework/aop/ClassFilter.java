@@ -19,6 +19,7 @@ package org.springframework.aop;
 /**
  * Filter that restricts matching of a pointcut or introduction to
  * a given set of target classes.
+ * 从给定的目标类限定匹配的一个切点和介绍的过滤器
  *
  * <p>Can be used as part of a {@link Pointcut} or for the entire
  * targeting of an {@link IntroductionAdvisor}.
@@ -37,6 +38,8 @@ public interface ClassFilter {
 
 	/**
 	 * Should the pointcut apply to the given interface or target class?
+	 *
+	 * 是否应用在给定的接口或者目标类上的切点
 	 * @param clazz the candidate target class
 	 * @return whether the advice should apply to the given target class
 	 */
@@ -45,6 +48,8 @@ public interface ClassFilter {
 
 	/**
 	 * Canonical instance of a ClassFilter that matches all classes.
+	 *
+	 * 匹配所有类的 ClassFilter 典范实例
 	 */
 	ClassFilter TRUE = TrueClassFilter.INSTANCE;
 

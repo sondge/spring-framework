@@ -17,4 +17,7 @@ dependencies {
     compile(project(":spring-core"))
     compile(project(":spring-beans"))
     compile(project(":spring-expression"))
+    compile(project(":spring-aspects"))
+    compile(project(":spring-aop"))
+
 }

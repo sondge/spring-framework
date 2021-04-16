@@ -21,10 +21,12 @@ import org.aopalliance.aop.Advice;
 /**
  * Common marker interface for after advice,
  * such as {@link AfterReturningAdvice} and {@link ThrowsAdvice}.
+ * <p>
+ * 后置通知的共同标记接口 AfterReturningAdvice 以及 ThrowsAdvice 接口，在目标方法执行之后通知
  *
  * @author Juergen Hoeller
- * @since 2.0.3
  * @see BeforeAdvice
+ * @since 2.0.3
  */
 public interface AfterAdvice extends Advice {
 

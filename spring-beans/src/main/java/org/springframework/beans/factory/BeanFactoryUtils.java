@@ -262,14 +262,20 @@ public abstract class BeanFactoryUtils {
 	 */
 	public static String[] beanNamesForTypeIncludingAncestors(
 			ListableBeanFactory lbf, Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
-
+		// 断言工厂不为空
 		Assert.notNull(lbf, "ListableBeanFactory must not be null");
+		// 获取对应的类型
 		String[] result = lbf.getBeanNamesForType(type, includeNonSingletons, allowEagerInit);
+		// 如果工厂是 HierarchicalBeanFactory
 		if (lbf instanceof HierarchicalBeanFactory) {
+			// 强转对应的工厂类
 			HierarchicalBeanFactory hbf = (HierarchicalBeanFactory) lbf;
+			// 如果父类工厂是 ListableBeanFact
 			if (hbf.getParentBeanFactory() instanceof ListableBeanFactory) {
+				// 获取对应的父类结果
 				String[] parentResult = beanNamesForTypeIncludingAncestors(
 						(ListableBeanFactory) hbf.getParentBeanFactory(), type, includeNonSingletons, allowEagerInit);
+				// 合并父类结果
 				result = mergeNamesWithParent(result, parentResult, hbf);
 			}
 		}

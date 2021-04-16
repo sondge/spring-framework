@@ -21,6 +21,8 @@ import java.lang.reflect.AccessibleObject;
 /**
  * This interface represents a generic runtime joinpoint (in the AOP
  * terminology).
+ * <p>
+ * 这个接口通常是运行时的连接点
  *
  * <p>A runtime joinpoint is an <i>event</i> that occurs on a static
  * joinpoint (i.e. a location in a the program). For instance, an
@@ -41,8 +43,11 @@ public interface Joinpoint {
 
 	/**
 	 * Proceed to the next interceptor in the chain.
+	 * <p>
+	 * 继续执行调用链中的下一个拦截器
 	 * <p>The implementation and the semantics of this method depends
 	 * on the actual joinpoint type (see the children interfaces).
+	 *
 	 * @return see the children interfaces' proceed definition
 	 * @throws Throwable if the joinpoint throws an exception
 	 */
@@ -50,13 +55,18 @@ public interface Joinpoint {
 
 	/**
 	 * Return the object that holds the current joinpoint's static part.
+	 * <p>
+	 * 获取当前正在加载的 static 对象
 	 * <p>For instance, the target object for an invocation.
+	 *
 	 * @return the object (can be null if the accessible object is static)
 	 */
 	Object getThis();
 
 	/**
 	 * Return the static part of this joinpoint.
+	 * <p>
+	 * 返回此连接点的静态部分
 	 * <p>The static part is an accessible object on which a chain of
 	 * interceptors are installed.
 	 */

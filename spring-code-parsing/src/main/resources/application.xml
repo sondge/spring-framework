@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
-	   http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+	   http://www.springframework.org/schema/beans/spring-beans.xsd
+	   http://www.springframework.org/schema/util
+	   http://www.springframework.org/schema/util/spring-util.xsd
+	   http://www.springframework.org/schema/aop
+	   http://www.springframework.org/schema/aop/spring-aop.xsd">
 	<bean id="myTestBean" class="club.sondge.code.parsing.MyTestBean"/>
 	<bean id="courier" class="club.sondge.code.parsing.Courier">
 		<constructor-arg name="addr" value="A 地区"/>
@@ -26,11 +32,13 @@
 	<bean id="initializingBeanTest" class="club.sondge.code.parsing.intmethod.InitializingBeanTest">
 		<property name="name" value="chenssy 1 号"/>
 	</bean>
-	<bean id="initializingBean1" class="club.sondge.code.parsing.intmethod.InitializingBeanTest" init-method="setOtherName">
+	<bean id="initializingBean1" class="club.sondge.code.parsing.intmethod.InitializingBeanTest"
+		  init-method="setOtherName">
 		<property name="name" value="chenssy 1 号"/>
 	</bean>
 
-	<bean id="lifeCycleTest" class="club.sondge.code.parsing.lifecycle.LifeCycleTest" init-method="initMethod" destroy-method="destroyMethod">
+	<bean id="lifeCycleTest" class="club.sondge.code.parsing.lifecycle.LifeCycleTest" init-method="initMethod"
+		  destroy-method="destroyMethod">
 		<property name="name" value="chenssy 1 号"/>
 	</bean>
 	<bean id="studentService" class="club.sondge.code.parsing.beanfactorypostprocessor.StudentService">
@@ -82,5 +90,17 @@
 	<bean id="student111" class="club.sondge.code.parsing.converter.Student">
 		<property name="studentService" value="18#chenssy"/>
 	</bean>
+
+	<bean id="beforeAdvice" class="club.sondge.code.parsing.aop.AopBeforeMethod"/>
+	<bean id="afterReturningAdvice" class="club.sondge.code.parsing.aop.AopAfterReturningMethod"/>
+
+	<aop:aspectj-autoproxy expose-proxy="true"/>
+
+	<aop:config expose-proxy="true">
+		<aop:pointcut id="point_cut1" expression="execution(public * club.sondge.code.parsing.beanfactorypostprocessor.StudentService.*(..))"/>
+<!--		<aop:pointcut id="point_cut2" expression="execution(public * club.sondge.code.parsing.beanfactorypostprocessor.StudentService.*(..))"/>-->
+		<aop:advisor advice-ref="beforeAdvice" pointcut-ref="point_cut1"/>
+		<aop:advisor advice-ref="afterReturningAdvice" pointcut-ref="point_cut1"/>
+	</aop:config>
 
 </beans>
