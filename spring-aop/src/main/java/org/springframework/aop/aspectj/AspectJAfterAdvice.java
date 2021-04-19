@@ -16,16 +16,17 @@
 
 package org.springframework.aop.aspectj;
 
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.aop.AfterAdvice;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
-
-import org.springframework.aop.AfterAdvice;
-
 /**
  * Spring AOP advice wrapping an AspectJ after advice method.
+ *
+ * Spring AOP advice AspectJ 后置通知方法的包装
  *
  * @author Rod Johnson
  * @since 2.0
@@ -36,7 +37,7 @@ public class AspectJAfterAdvice extends AbstractAspectJAdvice
 
 	public AspectJAfterAdvice(
 			Method aspectJBeforeAdviceMethod, AspectJExpressionPointcut pointcut, AspectInstanceFactory aif) {
-
+		// 调用父类的构造方法
 		super(aspectJBeforeAdviceMethod, pointcut, aif);
 	}
 
@@ -44,19 +45,23 @@ public class AspectJAfterAdvice extends AbstractAspectJAdvice
 	@Override
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		try {
+			// 调用 mi proceed
 			return mi.proceed();
 		}
 		finally {
+			// 调用后置通知逻辑
 			invokeAdviceMethod(getJoinPointMatch(), null, null);
 		}
 	}
 
 	@Override
+	// 不是前置通知
 	public boolean isBeforeAdvice() {
 		return false;
 	}
 
 	@Override
+	// 是后置通知
 	public boolean isAfterAdvice() {
 		return true;
 	}

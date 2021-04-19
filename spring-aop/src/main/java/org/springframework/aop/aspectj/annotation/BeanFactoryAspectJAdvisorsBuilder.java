@@ -16,19 +16,18 @@
 
 package org.springframework.aop.aspectj.annotation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.aspectj.lang.reflect.PerClauseKind;
-
 import org.springframework.aop.Advisor;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Helper for retrieving @AspectJ beans from a BeanFactory and building
@@ -81,37 +80,51 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	 * @see #isEligibleBean
 	 */
 	public List<Advisor> buildAspectJAdvisors() {
+		// 获取全部的  aspectBeanName 列表
 		List<String> aspectNames = this.aspectBeanNames;
-
+		// 双重检查锁
 		if (aspectNames == null) {
 			synchronized (this) {
 				aspectNames = this.aspectBeanNames;
 				if (aspectNames == null) {
+					// 定义通知器列表
 					List<Advisor> advisors = new ArrayList<>();
+					// 获取对应的 aspectNames 列表
 					aspectNames = new ArrayList<>();
+					// 获取工厂内的全部名称
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
 					for (String beanName : beanNames) {
+						// 如果不是 Aspect Name 直接放回
 						if (!isEligibleBean(beanName)) {
 							continue;
 						}
 						// We must be careful not to instantiate beans eagerly as in this case they
 						// would be cached by the Spring container but would not have been weaved.
+						// 获取对应的类型，如果类型为空继续下一次循环
 						Class<?> beanType = this.beanFactory.getType(beanName, false);
 						if (beanType == null) {
 							continue;
 						}
+						// 如果是  Aspect
 						if (this.advisorFactory.isAspect(beanType)) {
+							// 加入 beanName
 							aspectNames.add(beanName);
+							// 创建一个 AspectMetadata
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
+							// 如果是单例的
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
+								// 创建对应的工厂
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+								// 获取通知器
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
+								// 如果是单例的示例，把通知器加入缓存
 								if (this.beanFactory.isSingleton(beanName)) {
 									this.advisorsCache.put(beanName, classAdvisors);
 								}
 								else {
+									// 将 beanName 和工厂加入缓存
 									this.aspectFactoryCache.put(beanName, factory);
 								}
 								advisors.addAll(classAdvisors);
@@ -122,9 +135,12 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 									throw new IllegalArgumentException("Bean with name '" + beanName +
 											"' is a singleton, but aspect instantiation model is not singleton");
 								}
+								// 获取对应的 MetadataAwareAspectInstanceFactory
 								MetadataAwareAspectInstanceFactory factory =
 										new PrototypeAspectInstanceFactory(this.beanFactory, beanName);
+								// 将  beanName 和  factory 加入工厂
 								this.aspectFactoryCache.put(beanName, factory);
+								// 加入所有的通知器
 								advisors.addAll(this.advisorFactory.getAdvisors(factory));
 							}
 						}
@@ -134,18 +150,22 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 				}
 			}
 		}
-
+		// 如果没有数据返回空列表
 		if (aspectNames.isEmpty()) {
 			return Collections.emptyList();
 		}
 		List<Advisor> advisors = new ArrayList<>();
 		for (String aspectName : aspectNames) {
+			// 获取对应的缓存 Advisor
 			List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);
 			if (cachedAdvisors != null) {
+				// 加入对应的缓存 Advisor
 				advisors.addAll(cachedAdvisors);
 			}
 			else {
+				// 获取对应的元数据
 				MetadataAwareAspectInstanceFactory factory = this.aspectFactoryCache.get(aspectName);
+				// 加入对应的通知器
 				advisors.addAll(this.advisorFactory.getAdvisors(factory));
 			}
 		}

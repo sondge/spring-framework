@@ -16,14 +16,13 @@
 
 package org.springframework.aop.framework.adapter;
 
-import java.io.Serializable;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.springframework.aop.BeforeAdvice;
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
 
 /**
  * Interceptor to wrap a {@link MethodBeforeAdvice}.
@@ -37,11 +36,14 @@ import org.springframework.util.Assert;
 @SuppressWarnings("serial")
 public class MethodBeforeAdviceInterceptor implements MethodInterceptor, BeforeAdvice, Serializable {
 
+	// 定义不可变的前置通知器
 	private final MethodBeforeAdvice advice;
 
 
 	/**
 	 * Create a new MethodBeforeAdviceInterceptor for the given advice.
+	 * 创建一个新的 前置通知拦截器根据给定 通知器
+	 *
 	 * @param advice the MethodBeforeAdvice to wrap
 	 */
 	public MethodBeforeAdviceInterceptor(MethodBeforeAdvice advice) {
@@ -51,8 +53,11 @@ public class MethodBeforeAdviceInterceptor implements MethodInterceptor, BeforeA
 
 
 	@Override
+	// 执行前置通知
 	public Object invoke(MethodInvocation mi) throws Throwable {
+		// 执行前置通知逻辑
 		this.advice.before(mi.getMethod(), mi.getArguments(), mi.getThis());
+		// 通过 MethodInvocation 调用下一个拦截器，若所有拦截器均执行完，则调用目标方法
 		return mi.proceed();
 	}
 

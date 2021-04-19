@@ -16,10 +16,6 @@
 
 package org.springframework.aop.aspectj.annotation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -27,9 +23,15 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 /**
  * {@link AspectJAwareAdvisorAutoProxyCreator} subclass that processes all AspectJ
  * annotation aspects in the current application context, as well as Spring Advisors.
+ *
+ * 所有 Aspect 注解在当前上下文中解析，也是 Spring 的通知器
  *
  * <p>Any AspectJ annotated classes will automatically be recognized, and their
  * advice applied if Spring AOP's proxy-based model is capable of applying it.
@@ -50,47 +52,61 @@ import org.springframework.util.Assert;
 public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorAutoProxyCreator {
 
 	@Nullable
+	// 获取对应的匹配
 	private List<Pattern> includePatterns;
 
 	@Nullable
+	// 获取 AspectJAdvisorFactory
 	private AspectJAdvisorFactory aspectJAdvisorFactory;
 
 	@Nullable
+	// 获取 BeanFactoryAspectJAdvisorsBuilder
 	private BeanFactoryAspectJAdvisorsBuilder aspectJAdvisorsBuilder;
 
 
 	/**
 	 * Set a list of regex patterns, matching eligible @AspectJ bean names.
+	 *
+	 * 设置正则匹配列表，匹配包含 @AspectJ 的 Bean 名称
 	 * <p>Default is to consider all @AspectJ beans as eligible.
 	 */
 	public void setIncludePatterns(List<String> patterns) {
+		// 获取对应的数组
 		this.includePatterns = new ArrayList<>(patterns.size());
 		for (String patternText : patterns) {
+			// 加入匹配器
 			this.includePatterns.add(Pattern.compile(patternText));
 		}
 	}
 
+	// 设置对应的 AsspectJAdvisorFactory
 	public void setAspectJAdvisorFactory(AspectJAdvisorFactory aspectJAdvisorFactory) {
 		Assert.notNull(aspectJAdvisorFactory, "AspectJAdvisorFactory must not be null");
 		this.aspectJAdvisorFactory = aspectJAdvisorFactory;
 	}
 
 	@Override
+	// 初始化对应的  BeanFactory
 	protected void initBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		super.initBeanFactory(beanFactory);
+		// 如果  AspectJAdvisorFactory 为空，创建一个新的 ReflectiveAspectJAdvisorFactory
 		if (this.aspectJAdvisorFactory == null) {
 			this.aspectJAdvisorFactory = new ReflectiveAspectJAdvisorFactory(beanFactory);
 		}
+		// 定义对应的 apectJAdvisorBuilder
 		this.aspectJAdvisorsBuilder =
 				new BeanFactoryAspectJAdvisorsBuilderAdapter(beanFactory, this.aspectJAdvisorFactory);
 	}
 
 
 	@Override
+	// 查找对应的待定的 Advisor
 	protected List<Advisor> findCandidateAdvisors() {
 		// Add all the Spring advisors found according to superclass rules.
+		// 获取父类的 Advisor
 		List<Advisor> advisors = super.findCandidateAdvisors();
 		// Build Advisors for all AspectJ aspects in the bean factory.
+		// 构建全部的 AspectJAdvisor(解析对应的˙注解，并构建通知器)
 		if (this.aspectJAdvisorsBuilder != null) {
 			advisors.addAll(this.aspectJAdvisorsBuilder.buildAspectJAdvisors());
 		}

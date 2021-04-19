@@ -248,24 +248,34 @@ public abstract class AopUtils {
 			// No need to iterate the methods if we're matching any method anyway...
 			return true;
 		}
-
+		// 定义  IntroductionAwareMethodMatcher 实例
 		IntroductionAwareMethodMatcher introductionAwareMethodMatcher = null;
+		// 如果方法匹配器是 IntroductionAwareMethodMatcher 类型的
 		if (methodMatcher instanceof IntroductionAwareMethodMatcher) {
+			// 直接获取值
 			introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher;
 		}
-
+		// 定义类集合
 		Set<Class<?>> classes = new LinkedHashSet<>();
+		// 如果目标类不是代理类，则加入对应的类
 		if (!Proxy.isProxyClass(targetClass)) {
 			classes.add(ClassUtils.getUserClass(targetClass));
 		}
+		// 加入全部接口类
 		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
-
+		// 遍历所有的类
 		for (Class<?> clazz : classes) {
+			// 获取类中的全部方法
 			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
+			// 循环遍历方法
 			for (Method method : methods) {
+				// 如果 IntroductionAwareMethodMatcher 实例不为空
 				if (introductionAwareMethodMatcher != null ?
+						// 并且可以匹配对应的方法
 						introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions) :
+						// 匹配器可以匹配方法
 						methodMatcher.matches(method, targetClass)) {
+					// 直接返回 true
 					return true;
 				}
 			}
@@ -374,7 +384,9 @@ public abstract class AopUtils {
 
 		// Use reflection to invoke the method.
 		try {
+			// 设置方法权限
 			ReflectionUtils.makeAccessible(method);
+			// 反射调用目标方法
 			return method.invoke(target, args);
 		} catch (InvocationTargetException ex) {
 			// Invoked method threw a checked exception.

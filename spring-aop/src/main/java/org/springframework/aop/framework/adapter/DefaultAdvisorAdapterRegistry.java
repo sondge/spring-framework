@@ -16,15 +16,14 @@
 
 package org.springframework.aop.framework.adapter;
 
+import org.aopalliance.aop.Advice;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.springframework.aop.Advisor;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.aopalliance.aop.Advice;
-import org.aopalliance.intercept.MethodInterceptor;
-
-import org.springframework.aop.Advisor;
-import org.springframework.aop.support.DefaultPointcutAdvisor;
 
 /**
  * Default implementation of the {@link AdvisorAdapterRegistry} interface.
@@ -77,19 +76,27 @@ public class DefaultAdvisorAdapterRegistry implements AdvisorAdapterRegistry, Se
 
 	@Override
 	public MethodInterceptor[] getInterceptors(Advisor advisor) throws UnknownAdviceTypeException {
+		// 定义拦截器列表
 		List<MethodInterceptor> interceptors = new ArrayList<>(3);
+		// 获取通知器
 		Advice advice = advisor.getAdvice();
+		// 如果通知器是 MethodInterceptor 类型的
 		if (advice instanceof MethodInterceptor) {
+			// 加入对应的兰急切
 			interceptors.add((MethodInterceptor) advice);
 		}
+		// 调用通知适配器
 		for (AdvisorAdapter adapter : this.adapters) {
+			// 如果适配器支持通知，加入对应的拦截器
 			if (adapter.supportsAdvice(advice)) {
 				interceptors.add(adapter.getInterceptor(advisor));
 			}
 		}
+		// 如果拦截器为空，则抛出异常
 		if (interceptors.isEmpty()) {
 			throw new UnknownAdviceTypeException(advisor.getAdvice());
 		}
+		// 将列表转化为数组
 		return interceptors.toArray(new MethodInterceptor[0]);
 	}
 

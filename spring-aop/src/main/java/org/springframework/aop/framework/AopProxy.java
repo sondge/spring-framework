@@ -22,6 +22,8 @@ import org.springframework.lang.Nullable;
  * Delegate interface for a configured AOP proxy, allowing for the creation
  * of actual proxy objects.
  *
+ * 声明接口对应 配置一个 AOP 代理，允许对于创建实际的代理对象
+ *
  * <p>Out-of-the-box implementations are available for JDK dynamic proxies
  * and for CGLIB proxies, as applied by {@link DefaultAopProxyFactory}.
  *
@@ -33,6 +35,8 @@ public interface AopProxy {
 
 	/**
 	 * Create a new proxy object.
+	 *
+	 * 创建一个新的代理对象
 	 * <p>Uses the AopProxy's default class loader (if necessary for proxy creation):
 	 * usually, the thread context class loader.
 	 * @return the new proxy object (never {@code null})
@@ -49,6 +53,8 @@ public interface AopProxy {
 	 * @param classLoader the class loader to create the proxy with
 	 * (or {@code null} for the low-level proxy facility's default)
 	 * @return the new proxy object (never {@code null})
+	 *
+	 * 创建一个新的代理对象
 	 */
 	Object getProxy(@Nullable ClassLoader classLoader);
 
