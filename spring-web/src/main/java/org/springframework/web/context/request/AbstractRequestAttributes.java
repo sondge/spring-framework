@@ -16,10 +16,10 @@
 
 package org.springframework.web.context.request;
 
+import org.springframework.util.Assert;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.springframework.util.Assert;
 
 /**
  * Abstract support class for RequestAttributes implementations,
@@ -40,8 +40,12 @@ public abstract class AbstractRequestAttributes implements RequestAttributes {
 
 	/**
 	 * Signal that the request has been completed.
+	 *
+	 * 发送请求已经完成的信息
 	 * <p>Executes all request destruction callbacks and updates the
 	 * session attributes that have been accessed during request processing.
+	 *
+	 * 执行所有请求销毁回调和更新 session 属性在请求已经执行请求
 	 */
 	public void requestCompleted() {
 		executeRequestDestructionCallbacks();

@@ -1003,15 +1003,19 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 	/**
 	 * Override the parent class implementation in order to intercept PATCH requests.
+	 * <p>
+	 * 重写父类方法实现目的是为了拦截修补请求
 	 */
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		// 获得请求方法
 		HttpMethod httpMethod = HttpMethod.resolve(request.getMethod());
+		// 处理 PATCH 请求
 		if (httpMethod == HttpMethod.PATCH || httpMethod == null) {
 			processRequest(request, response);
 		} else {
+			// 调用父类处理其他请求
 			super.service(request, response);
 		}
 	}
@@ -1077,9 +1081,10 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	@Override
 	protected void doOptions(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		// 如果 dispatchOptionsRequest 为 true，则处理该请求
 		if (this.dispatchOptionsRequest || CorsUtils.isPreFlightRequest(request)) {
 			processRequest(request, response);
+			// 如果相应包含 Allow， 则不需要交给父方法处理
 			if (response.containsHeader("Allow")) {
 				// Proper OPTIONS response coming from a handler - we're done.
 				return;
@@ -1087,6 +1092,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		}
 
 		// Use response wrapper in order to always add PATCH to the allowed methods
+		// 调用父方法，并且在相应中增加 Patch 的值
 		super.doOptions(request, new HttpServletResponseWrapper(response) {
 			@Override
 			public void setHeader(String name, String value) {
@@ -1107,41 +1113,52 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	@Override
 	protected void doTrace(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		// dispatchTraceRequest 如果为 true，则处理该请求
 		if (this.dispatchTraceRequest) {
 			processRequest(request, response);
+			// 如果相应的内容类型 "message/http"，则不需要交给父类方法处理
 			if ("message/http".equals(response.getContentType())) {
 				// Proper TRACE response coming from a handler - we're done.
 				return;
 			}
 		}
+		// 调用父类方法
 		super.doTrace(request, response);
 	}
 
 	/**
 	 * Process this request, publishing an event regardless of the outcome.
+	 * <p>
+	 * 处理这个请求，发布事件，而不管结果
 	 * <p>The actual event handling is performed by the abstract
 	 * {@link #doService} template method.
 	 */
 	protected final void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		// 获取开始时间
 		long startTime = System.currentTimeMillis();
+		// 定义异常信息
 		Throwable failureCause = null;
-
+		// 获取前置的本地上下文
 		LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
+		// 构建本地上下文
 		LocaleContext localeContext = buildLocaleContext(request);
-
+		// 获取前置访问属性
 		RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
+		// 构建新的请求属性
 		ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
-
+		// 获取 Web 异步管理器
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+		// 注册回调拦截器
 		asyncManager.registerCallableInterceptor(FrameworkServlet.class.getName(), new RequestBindingInterceptor());
-
+		// 初始化上下文持有者
 		initContextHolders(request, localeContext, requestAttributes);
 
 		try {
+			// 执行真正的逻辑
 			doService(request, response);
+
+			// 异常处理
 		} catch (ServletException | IOException ex) {
 			failureCause = ex;
 			throw ex;
@@ -1149,11 +1166,15 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			failureCause = ex;
 			throw new NestedServletException("Request processing failed", ex);
 		} finally {
+			// 重新设置上下文持有者
 			resetContextHolders(request, previousLocaleContext, previousAttributes);
+			// 通知请求已经结束，并且更新  Session 以及请求销毁
 			if (requestAttributes != null) {
 				requestAttributes.requestCompleted();
 			}
+			//打印请求日志，并且日志级别为 DEBUG
 			logResult(request, response, failureCause, asyncManager);
+			// 发布 ServletRequestHandledEvent  事件
 			publishRequestHandledEvent(request, response, startTime, failureCause);
 		}
 	}
