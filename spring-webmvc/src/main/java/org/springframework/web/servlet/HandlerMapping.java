@@ -16,13 +16,15 @@
 
 package org.springframework.web.servlet;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.lang.Nullable;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Interface to be implemented by objects that define a mapping between
  * requests and handler objects.
+ * <p>
+ * 接口目的是为了实现定义一个路由在请求与处理对象之间
  *
  * <p>This class can be implemented by application developers, although this is not
  * necessary, as {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}
@@ -58,6 +60,9 @@ public interface HandlerMapping {
 	/**
 	 * Name of the {@link HttpServletRequest} attribute that contains the mapped
 	 * handler for the best matching pattern.
+	 * <p>
+	 * 这个属性包含映射处理对于最好的匹配模式名称
+	 *
 	 * @since 4.3.21
 	 */
 	String BEST_MATCHING_HANDLER_ATTRIBUTE = HandlerMapping.class.getName() + ".bestMatchingHandler";
@@ -67,6 +72,9 @@ public interface HandlerMapping {
 	 * used to look up the matching handler, which depending on the configured
 	 * {@link org.springframework.web.util.UrlPathHelper} could be the full path
 	 * or without the context path, decoded or not, etc.
+	 * <p>
+	 * 包含使用的路径目的是为了查找依赖配置 UrlPathHelper 可以被满路径或者没有上下文路径或者是否编码配置 处理的属性名称
+	 *
 	 * @since 5.2
 	 */
 	String LOOKUP_PATH = HandlerMapping.class.getName() + ".lookupPath";
@@ -75,6 +83,8 @@ public interface HandlerMapping {
 	 * Name of the {@link HttpServletRequest} attribute that contains the path
 	 * within the handler mapping, in case of a pattern match, or the full
 	 * relevant URI (typically within the DispatcherServlet's mapping) else.
+	 * <p>
+	 * {@link HttpServletRequest}属性的名称，如果模式匹配，则包含处理程序映射内的路径，否则包含完整的相关URI（通常在DispatcherServlet映射内）。
 	 * <p>Note: This attribute is not required to be supported by all
 	 * HandlerMapping implementations. URL-based HandlerMappings will
 	 * typically support it, but handlers should not necessarily expect
@@ -83,8 +93,9 @@ public interface HandlerMapping {
 	String PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE = HandlerMapping.class.getName() + ".pathWithinHandlerMapping";
 
 	/**
-	 * Name of the {@link HttpServletRequest} attribute that contains the
-	 * best matching pattern within the handler mapping.
+	 * Name of the {@link HttpServletRequest} attribute that contains the best matching pattern within the handler mapping.
+	 * <p>
+	 * 在处理程序映射中包含最佳匹配模式的属性名称
 	 * <p>Note: This attribute is not required to be supported by all
 	 * HandlerMapping implementations. URL-based HandlerMappings will
 	 * typically support it, but handlers should not necessarily expect
@@ -95,6 +106,8 @@ public interface HandlerMapping {
 	/**
 	 * Name of the boolean {@link HttpServletRequest} attribute that indicates
 	 * whether type-level mappings should be inspected.
+	 * <p>
+	 * 表示是否检查类型级别的布尔值属性名称
 	 * <p>Note: This attribute is not required to be supported by all
 	 * HandlerMapping implementations.
 	 */
@@ -103,6 +116,8 @@ public interface HandlerMapping {
 	/**
 	 * Name of the {@link HttpServletRequest} attribute that contains the URI
 	 * templates map, mapping variable names to values.
+	 * <p>
+	 * 包含 URI 模板映射，映射变量名称的值的属性名称
 	 * <p>Note: This attribute is not required to be supported by all
 	 * HandlerMapping implementations. URL-based HandlerMappings will
 	 * typically support it, but handlers should not necessarily expect
@@ -114,6 +129,8 @@ public interface HandlerMapping {
 	 * Name of the {@link HttpServletRequest} attribute that contains a map with
 	 * URI variable names and a corresponding MultiValueMap of URI matrix
 	 * variables for each.
+	 * <p>
+	 * 包含 URI 变量名称和相应的URI 矩阵变量值的属性名称
 	 * <p>Note: This attribute is not required to be supported by all
 	 * HandlerMapping implementations and may also not be present depending on
 	 * whether the HandlerMapping is configured to keep matrix variable content
@@ -123,6 +140,8 @@ public interface HandlerMapping {
 	/**
 	 * Name of the {@link HttpServletRequest} attribute that contains the set of
 	 * producible MediaTypes applicable to the mapped handler.
+	 * <p>
+	 * 包含可生产媒体类型适用于映射处理的属性名称
 	 * <p>Note: This attribute is not required to be supported by all
 	 * HandlerMapping implementations. Handlers should not necessarily expect
 	 * this request attribute to be present in all scenarios.
@@ -139,6 +158,9 @@ public interface HandlerMapping {
 	 * <p>Returns {@code null} if no match was found. This is not an error.
 	 * The DispatcherServlet will query all registered HandlerMapping beans to find
 	 * a match, and only decide there is an error if none can find a handler.
+	 * <p>
+	 * 获得请求对应的处理器链和拦截器链
+	 *
 	 * @param request current HTTP request
 	 * @return a HandlerExecutionChain instance containing handler object and
 	 * any interceptors, or {@code null} if no mapping found

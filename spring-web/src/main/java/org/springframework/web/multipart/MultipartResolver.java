@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
  * with <a href="https://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>.
  * Implementations are typically usable both within an application context
  * and standalone.
+ * <p>
+ * 对于多部分文件加载解决按照 RFC 1867 标准。 实现通常都可以在应用程序上下文中使用
  *
  * <p>There are two concrete implementations included in Spring, as of Spring 3.1:
  * <ul>
@@ -53,7 +55,7 @@ import javax.servlet.http.HttpServletRequest;
  *   MultipartFile multipartFile = multipartRequest.getFile("image");
  *   ...
  * }</pre>
- *
+ * <p>
  * Instead of direct access, command or form controllers can register a
  * {@link org.springframework.web.multipart.support.ByteArrayMultipartFileEditor}
  * or {@link org.springframework.web.multipart.support.StringMultipartFileEditor}
@@ -74,20 +76,23 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Juergen Hoeller
  * @author Trevor D. Cook
- * @since 29.09.2003
  * @see MultipartHttpServletRequest
  * @see MultipartFile
  * @see org.springframework.web.multipart.commons.CommonsMultipartResolver
  * @see org.springframework.web.multipart.support.ByteArrayMultipartFileEditor
  * @see org.springframework.web.multipart.support.StringMultipartFileEditor
  * @see org.springframework.web.servlet.DispatcherServlet
+ * @since 29.09.2003
  */
 public interface MultipartResolver {
 
 	/**
 	 * Determine if the given request contains multipart content.
+	 * <p>
+	 * 表示是否从给定的请求中包含 multipart 内容
 	 * <p>Will typically check for content type "multipart/form-data", but the actually
 	 * accepted requests might depend on the capabilities of the resolver implementation.
+	 *
 	 * @param request the servlet request to be evaluated
 	 * @return whether the request contains multipart content
 	 */
@@ -99,10 +104,13 @@ public interface MultipartResolver {
 	 * {@link org.springframework.web.multipart.MultipartHttpServletRequest}
 	 * object that provides access to file descriptors and makes contained
 	 * parameters accessible via the standard ServletRequest methods.
+	 * <p>
+	 * 从给定的 HTTP 请求在 multipart 文件和参数和包装这个请求在一个 MultipartHttpServletRequest 对象
+	 *
 	 * @param request the servlet request to wrap (must be of a multipart content type)
 	 * @return the wrapped servlet request
 	 * @throws MultipartException if the servlet request is not multipart, or if
-	 * implementation-specific problems are encountered (such as exceeding file size limits)
+	 *                            implementation-specific problems are encountered (such as exceeding file size limits)
 	 * @see MultipartHttpServletRequest#getFile
 	 * @see MultipartHttpServletRequest#getFileNames
 	 * @see MultipartHttpServletRequest#getFileMap
@@ -115,6 +123,9 @@ public interface MultipartResolver {
 	/**
 	 * Cleanup any resources used for the multipart handling,
 	 * like a storage for the uploaded files.
+	 * <p>
+	 * 清理对于  multipart 处理的资源文件，像存储的加载文件
+	 *
 	 * @param request the request to cleanup resources for
 	 */
 	void cleanupMultipart(MultipartHttpServletRequest request);

@@ -16,26 +16,27 @@
 
 package org.springframework.web;
 
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ReflectionUtils;
+
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.HandlesTypes;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.HandlesTypes;
-
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ReflectionUtils;
-
 /**
  * Servlet 3.0 {@link ServletContainerInitializer} designed to support code-based
  * configuration of the servlet container using Spring's {@link WebApplicationInitializer}
  * SPI as opposed to (or possibly in combination with) the traditional
  * {@code web.xml}-based approach.
+ *
+ * Servlet 3.0 ServletContainerInitializer 设计目的为了支持编码基于配置这个 servlet 容器使用 Spring 的 SPI 作为非常规的 web.xml 方式
  *
  * <h2>Mechanism of Operation</h2>
  * This class will be loaded and instantiated and have its {@link #onStartup}
@@ -141,16 +142,20 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 	@Override
 	public void onStartup(@Nullable Set<Class<?>> webAppInitializerClasses, ServletContext servletContext)
 			throws ServletException {
-
+		// 定义 WebApplicationInitializer 列表
 		List<WebApplicationInitializer> initializers = new LinkedList<>();
-
+		// 如果 webAppInitializer类集合不为空
 		if (webAppInitializerClasses != null) {
+			// 循环遍历 webAppInitializer 类
 			for (Class<?> waiClass : webAppInitializerClasses) {
 				// Be defensive: Some servlet containers provide us with invalid classes,
 				// no matter what @HandlesTypes says...
+				// 被防御：一些 servlet 容器提供我们无效的类
+				// 无论 @HandlesTypes 说什么
 				if (!waiClass.isInterface() && !Modifier.isAbstract(waiClass.getModifiers()) &&
 						WebApplicationInitializer.class.isAssignableFrom(waiClass)) {
 					try {
+						// 加入初始化容器
 						initializers.add((WebApplicationInitializer)
 								ReflectionUtils.accessibleConstructor(waiClass).newInstance());
 					}
@@ -162,12 +167,15 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 		}
 
 		if (initializers.isEmpty()) {
+			// 记录日志信息
 			servletContext.log("No Spring WebApplicationInitializer types detected on classpath");
 			return;
 		}
-
+		// 记录日志信息
 		servletContext.log(initializers.size() + " Spring WebApplicationInitializers detected on classpath");
+		// 对 initializers 进行排序
 		AnnotationAwareOrderComparator.sort(initializers);
+		// 启动 servlet 类
 		for (WebApplicationInitializer initializer : initializers) {
 			initializer.onStartup(servletContext);
 		}

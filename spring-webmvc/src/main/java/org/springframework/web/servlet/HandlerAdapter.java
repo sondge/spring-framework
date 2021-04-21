@@ -16,13 +16,15 @@
 
 package org.springframework.web.servlet;
 
+import org.springframework.lang.Nullable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.lang.Nullable;
-
 /**
  * MVC framework SPI, allowing parameterization of the core MVC workflow.
+ * <p>
+ * MVC 框架的 SPI, 允许核心 MVC 工作流的参数
  *
  * <p>Interface that must be implemented for each handler type to handle a request.
  * This interface is used to allow the {@link DispatcherServlet} to be indefinitely
@@ -53,10 +55,14 @@ public interface HandlerAdapter {
 	 * Given a handler instance, return whether or not this {@code HandlerAdapter}
 	 * can support it. Typical HandlerAdapters will base the decision on the handler
 	 * type. HandlerAdapters will usually only support one handler type each.
+	 * <p>
+	 * 跟定一个处理器请求实例，返回是否可以处理它。典型的处理器适配器将基于这个决定处理类型。
+	 * HandlerAdapters 通常只支持一种处理请求类型
 	 * <p>A typical implementation:
 	 * <p>{@code
 	 * return (handler instanceof MyHandler);
 	 * }
+	 *
 	 * @param handler the handler object to check
 	 * @return whether or not this object can use the given handler
 	 */
@@ -65,14 +71,18 @@ public interface HandlerAdapter {
 	/**
 	 * Use the given handler to handle this request.
 	 * The workflow that is required may vary widely.
-	 * @param request current HTTP request
+	 * <p>
+	 * 使用给定的处理器来处理这个请求。
+	 * 所需的工作流程可能非常广泛
+	 *
+	 * @param request  current HTTP request
 	 * @param response current HTTP response
-	 * @param handler the handler to use. This object must have previously been passed
-	 * to the {@code supports} method of this interface, which must have
-	 * returned {@code true}.
-	 * @throws Exception in case of errors
+	 * @param handler  the handler to use. This object must have previously been passed
+	 *                 to the {@code supports} method of this interface, which must have
+	 *                 returned {@code true}.
 	 * @return a ModelAndView object with the name of the view and the required
 	 * model data, or {@code null} if the request has been handled directly
+	 * @throws Exception in case of errors
 	 */
 	@Nullable
 	ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception;
@@ -80,6 +90,9 @@ public interface HandlerAdapter {
 	/**
 	 * Same contract as for HttpServlet's {@code getLastModified} method.
 	 * Can simply return -1 if there's no support in the handler class.
+	 * <p>
+	 * 返回请求最新修改时间，如果不支持该操作，直接返回 -1 即可
+	 *
 	 * @param request current HTTP request
 	 * @param handler the handler to use
 	 * @return the lastModified value for the given handler

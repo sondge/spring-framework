@@ -16,15 +16,17 @@
 
 package org.springframework.web.servlet;
 
+import org.springframework.lang.Nullable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Interface for web-based theme resolution strategies that allows for
  * both theme resolution via the request and theme modification via
  * request and response.
+ * <p>
+ * 基于网络的解析主题请求和主题修改请求和返回策略的接口
  *
  * <p>This interface allows for implementations based on session,
  * cookies, etc. The default implementation is
@@ -42,15 +44,20 @@ import org.springframework.lang.Nullable;
  *
  * @author Jean-Pierre Pawlak
  * @author Juergen Hoeller
- * @since 17.06.2003
  * @see org.springframework.ui.context.Theme
  * @see org.springframework.ui.context.ThemeSource
+ * @since 17.06.2003
  */
 public interface ThemeResolver {
 
 	/**
 	 * Resolve the current theme name via the given request.
 	 * Should return a default theme as fallback in any case.
+	 * <p>
+	 * 从给定的请求解析当前主题的名称。例如从头 User-Agent，判断使用 PC 端，还是移动端的主题
+	 * <p>
+	 * 在任何情况下都应该准备返回默认的请求
+	 *
 	 * @param request the request to be used for resolution
 	 * @return the current theme name
 	 */
@@ -58,11 +65,14 @@ public interface ThemeResolver {
 
 	/**
 	 * Set the current theme name to the given one.
-	 * @param request the request to be used for theme name modification
-	 * @param response the response to be used for theme name modification
+	 * <p>
+	 * 设置请求所用的主题
+	 *
+	 * @param request   the request to be used for theme name modification
+	 * @param response  the response to be used for theme name modification
 	 * @param themeName the new theme name ({@code null} or empty to reset it)
 	 * @throws UnsupportedOperationException if the ThemeResolver implementation
-	 * does not support dynamic changing of the theme
+	 *                                       does not support dynamic changing of the theme
 	 */
 	void setThemeName(HttpServletRequest request, @Nullable HttpServletResponse response, @Nullable String themeName);
 

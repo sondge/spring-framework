@@ -16,18 +16,20 @@
 
 package org.springframework.web.servlet;
 
+import org.springframework.lang.Nullable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.lang.Nullable;
-
 /**
  * A strategy interface for retrieving and saving FlashMap instances.
+ * <p>
+ * 一个策略接口对于检索和保存 FlashMap 实例
  * See {@link FlashMap} for a general overview of flash attributes.
  *
  * @author Rossen Stoyanchev
- * @since 3.1
  * @see FlashMap
+ * @since 3.1
  */
 public interface FlashMapManager {
 
@@ -38,7 +40,10 @@ public interface FlashMapManager {
 	 * <p>This method is invoked in the beginning of every request in contrast
 	 * to {@link #saveOutputFlashMap}, which is invoked only when there are
 	 * flash attributes to be saved - i.e. before a redirect.
-	 * @param request the current request
+	 * <p>
+	 * 恢复参数，并将恢复过的和超时的参数从保存介质中删除
+	 *
+	 * @param request  the current request
 	 * @param response the current response
 	 * @return a FlashMap matching the current request or {@code null}
 	 */
@@ -51,8 +56,11 @@ public interface FlashMapManager {
 	 * <p><strong>NOTE:</strong> Invoke this method prior to a redirect in order
 	 * to allow saving the FlashMap in the HTTP session or in a response
 	 * cookie before the response is committed.
+	 * <p>
+	 * 保存参数
+	 *
 	 * @param flashMap the FlashMap to save
-	 * @param request the current request
+	 * @param request  the current request
 	 * @param response the current response
 	 */
 	void saveOutputFlashMap(FlashMap flashMap, HttpServletRequest request, HttpServletResponse response);
