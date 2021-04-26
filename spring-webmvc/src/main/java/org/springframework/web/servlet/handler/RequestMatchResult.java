@@ -16,10 +16,10 @@
 
 package org.springframework.web.servlet.handler;
 
-import java.util.Map;
-
 import org.springframework.util.Assert;
 import org.springframework.util.PathMatcher;
+
+import java.util.Map;
 
 /**
  * Container for the result from request pattern matching via
@@ -30,11 +30,17 @@ import org.springframework.util.PathMatcher;
  * @since 4.3.1
  */
 public class RequestMatchResult {
-
+	/**
+	 * 匹配上的路径
+	 */
 	private final String matchingPattern;
-
+	/**
+	 * 被匹配的路径
+	 */
 	private final String lookupPath;
-
+	/**
+	 * 路径匹配器
+	 */
 	private final PathMatcher pathMatcher;
 
 
@@ -58,7 +64,9 @@ public class RequestMatchResult {
 	/**
 	 * Extract URI template variables from the matching pattern as defined in
 	 * {@link PathMatcher#extractUriTemplateVariables}.
-	 * @return a map with URI template variables
+	 *
+	 * 提炼 URI 模板变量从已经匹配到的路径在
+	 * @return a map with URI template variables{@link PathMatcher#extractUriTemplateVariables}
 	 */
 	public Map<String, String> extractUriTemplateVariables() {
 		return this.pathMatcher.extractUriTemplateVariables(this.matchingPattern, this.lookupPath);

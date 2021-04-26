@@ -314,7 +314,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Additional logger to use when no mapped handler is found for a request.
 	 */
 	protected static final Log pageNotFoundLogger = LogFactory.getLog(PAGE_NOT_FOUND_LOG_CATEGORY);
-
+	/**
+	 * 默认配置类
+	 */
 	private static final Properties defaultStrategies;
 
 	static {
@@ -683,21 +685,29 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * we default to BeanNameUrlHandlerMapping.
 	 */
 	private void initHandlerMappings(ApplicationContext context) {
+		// 置空 handlerMapping
 		this.handlerMappings = null;
-
+		// 如果开启类探测功能
 		if (this.detectAllHandlerMappings) {
 			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
+			// 查找全部的 HandlerMapping 在这个 ApplicationContext, 包括祖先上下文
 			Map<String, HandlerMapping> matchingBeans =
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerMapping.class, true, false);
+			// 如果匹配的 Bean 不为空
 			if (!matchingBeans.isEmpty()) {
+				// 将匹配到的 Bean 全部加入 列表中
 				this.handlerMappings = new ArrayList<>(matchingBeans.values());
 				// We keep HandlerMappings in sorted order.
+				// 对 HandlerMapping 进行排序
 				AnnotationAwareOrderComparator.sort(this.handlerMappings);
 			}
 		} else {
 			try {
+				// 获取上下文中 HandlerMapping 队形
 				HandlerMapping hm = context.getBean(HANDLER_MAPPING_BEAN_NAME, HandlerMapping.class);
+				// 获取单个的 HandlerMapping 列表
 				this.handlerMappings = Collections.singletonList(hm);
+				// 忽略对应的异常
 			} catch (NoSuchBeanDefinitionException ex) {
 				// Ignore, we'll add a default HandlerMapping later.
 			}
@@ -705,6 +715,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		// Ensure we have at least one HandlerMapping, by registering
 		// a default HandlerMapping if no other mappings are found.
+		// 如果没有匹配到对应的 HandlerMapping, 则获取默认的 HandlerMapping
 		if (this.handlerMappings == null) {
 			this.handlerMappings = getDefaultStrategies(context, HandlerMapping.class);
 			if (logger.isTraceEnabled()) {
@@ -943,14 +954,22 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	@SuppressWarnings("unchecked")
 	protected <T> List<T> getDefaultStrategies(ApplicationContext context, Class<T> strategyInterface) {
+		// 获取对应的类名称
 		String key = strategyInterface.getName();
+		// 获取对应的值
 		String value = defaultStrategies.getProperty(key);
+		// 如果 value 不为空
 		if (value != null) {
+			// 基于 "," 分隔，创建 chassName 数组
 			String[] classNames = StringUtils.commaDelimitedListToStringArray(value);
+			// 创建 strategies 列表
 			List<T> strategies = new ArrayList<>(classNames.length);
+			// 遍历对应的 classNames 数组，创建对应创建对应的类，并添加到 strategies 列表找那个
 			for (String className : classNames) {
 				try {
+					// 获取对应的 Class
 					Class<?> clazz = ClassUtils.forName(className, DispatcherServlet.class.getClassLoader());
+					// 创建对应的 strategy 并且添加到 strategies 中
 					Object strategy = createDefaultStrategy(context, clazz);
 					strategies.add((T) strategy);
 				} catch (ClassNotFoundException ex) {
@@ -963,8 +982,10 @@ public class DispatcherServlet extends FrameworkServlet {
 									className + "] for interface [" + key + "]", err);
 				}
 			}
+			// 返回对应的 strategies
 			return strategies;
 		} else {
+			// 返回空列表
 			return new LinkedList<>();
 		}
 	}

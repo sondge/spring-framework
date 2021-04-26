@@ -16,13 +16,13 @@
 
 package org.springframework.web.bind.annotation;
 
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.springframework.core.annotation.AliasFor;
 
 /**
  * Annotation for mapping web requests onto methods in request-handling classes
@@ -61,12 +61,12 @@ import org.springframework.core.annotation.AliasFor;
  * @author Juergen Hoeller
  * @author Arjen Poutsma
  * @author Sam Brannen
- * @since 2.5
  * @see GetMapping
  * @see PostMapping
  * @see PutMapping
  * @see DeleteMapping
  * @see PatchMapping
+ * @since 2.5
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -76,9 +76,12 @@ public @interface RequestMapping {
 
 	/**
 	 * Assign a name to this mapping.
+	 * <p>
+	 * 给这个映射分配一个名称
 	 * <p><b>Supported at the type level as well as at the method level!</b>
 	 * When used on both levels, a combined name is derived by concatenation
 	 * with "#" as separator.
+	 *
 	 * @see org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder
 	 * @see org.springframework.web.servlet.handler.HandlerMethodMappingNamingStrategy
 	 */
@@ -86,6 +89,7 @@ public @interface RequestMapping {
 
 	/**
 	 * The primary mapping expressed by this annotation.
+	 * 主要的映射表达式
 	 * <p>This is an alias for {@link #path}. For example,
 	 * {@code @RequestMapping("/foo")} is equivalent to
 	 * {@code @RequestMapping(path="/foo")}.
@@ -100,6 +104,8 @@ public @interface RequestMapping {
 
 	/**
 	 * The path mapping URIs (e.g. {@code "/profile"}).
+	 * <p>
+	 * 路径映射的 URIs
 	 * <p>Ant-style path patterns are also supported (e.g. {@code "/profile/**"}).
 	 * At the method level, relative paths (e.g. {@code "edit"}) are supported
 	 * within the primary mapping expressed at the type level.
@@ -109,6 +115,7 @@ public @interface RequestMapping {
 	 * this primary mapping, narrowing it for a specific handler method.
 	 * <p><strong>NOTE</strong>: A handler method that is not mapped to any path
 	 * explicitly is effectively mapped to an empty path.
+	 *
 	 * @since 4.2
 	 */
 	@AliasFor("value")
@@ -117,6 +124,9 @@ public @interface RequestMapping {
 	/**
 	 * The HTTP request methods to map to, narrowing the primary mapping:
 	 * GET, POST, HEAD, OPTIONS, PUT, PATCH, DELETE, TRACE.
+	 * 这个  HTTP 请求方法映射它，缩小主要映射:
+	 * GET, POST, HEAD, OPTIONS, PUT, PATCH, DELETE, TRACE
+	 *
 	 * <p><b>Supported at the type level as well as at the method level!</b>
 	 * When used at the type level, all method-level mappings inherit this
 	 * HTTP method restriction.
@@ -125,6 +135,8 @@ public @interface RequestMapping {
 
 	/**
 	 * The parameters of the mapped request, narrowing the primary mapping.
+	 * 映射请求的参数
+	 *
 	 * <p>Same format for any environment: a sequence of "myParam=myValue" style
 	 * expressions, with a request only mapped if each such parameter is found
 	 * to have the given value. Expressions can be negated by using the "!=" operator,
@@ -140,6 +152,9 @@ public @interface RequestMapping {
 
 	/**
 	 * The headers of the mapped request, narrowing the primary mapping.
+	 * <p>
+	 * 请求映射的头部信息
+	 *
 	 * <p>Same format for any environment: a sequence of "My-Header=myValue" style
 	 * expressions, with a request only mapped if each such header is found
 	 * to have the given value. Expressions can be negated by using the "!=" operator,
@@ -156,6 +171,7 @@ public @interface RequestMapping {
 	 * <p><b>Supported at the type level as well as at the method level!</b>
 	 * When used at the type level, all method-level mappings inherit this
 	 * header restriction.
+	 *
 	 * @see org.springframework.http.MediaType
 	 */
 	String[] headers() default {};
@@ -175,6 +191,7 @@ public @interface RequestMapping {
 	 * <p><b>Supported at the type level as well as at the method level!</b>
 	 * If specified at both levels, the method level consumes condition overrides
 	 * the type level condition.
+	 *
 	 * @see org.springframework.http.MediaType
 	 * @see javax.servlet.http.HttpServletRequest#getContentType()
 	 */
@@ -202,6 +219,7 @@ public @interface RequestMapping {
 	 * <p><b>Supported at the type level as well as at the method level!</b>
 	 * If specified at both levels, the method level produces condition overrides
 	 * the type level condition.
+	 *
 	 * @see org.springframework.http.MediaType
 	 */
 	String[] produces() default {};

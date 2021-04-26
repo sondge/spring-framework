@@ -16,14 +16,14 @@
 
 package org.springframework.web.servlet.handler;
 
+import org.springframework.beans.BeansException;
+import org.springframework.util.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.springframework.beans.BeansException;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Implementation of the {@link org.springframework.web.servlet.HandlerMapping}
@@ -57,7 +57,9 @@ import org.springframework.util.CollectionUtils;
  * @see BeanNameUrlHandlerMapping
  */
 public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
-
+	/**
+	 * 配置 url 与处理器的内部映射
+	 */
 	private final Map<String, Object> urlMap = new LinkedHashMap<>();
 
 
@@ -135,7 +137,9 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 	 */
 	@Override
 	public void initApplicationContext() throws BeansException {
+		// 调用父类方法，进行初始化
 		super.initApplicationContext();
+		// 将 urlMap 配置，注册处理器
 		registerHandlers(this.urlMap);
 	}
 
@@ -146,12 +150,14 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 	 * @throws IllegalStateException if there is a conflicting handler registered
 	 */
 	protected void registerHandlers(Map<String, Object> urlMap) throws BeansException {
+		// 如果 urlMap 为空，打印日志
 		if (urlMap.isEmpty()) {
 			logger.trace("No patterns in " + formatMappingName());
 		}
 		else {
 			urlMap.forEach((url, handler) -> {
 				// Prepend with slash if not already present.
+				// 加上 /
 				if (!url.startsWith("/")) {
 					url = "/" + url;
 				}
@@ -159,6 +165,7 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 				if (handler instanceof String) {
 					handler = ((String) handler).trim();
 				}
+				// 注册处理器
 				registerHandler(url, handler);
 			});
 			if (logger.isDebugEnabled()) {

@@ -16,6 +16,15 @@
 
 package org.springframework.web.servlet.mvc.condition;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.cors.CorsUtils;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,16 +32,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.DispatcherType;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.cors.CorsUtils;
 
 /**
  * A logical disjunction (' || ') request condition that matches a request
@@ -128,16 +127,16 @@ public final class RequestMethodsRequestCondition extends AbstractRequestConditi
 		if (CorsUtils.isPreFlightRequest(request)) {
 			return matchPreFlight(request);
 		}
-
+		// 空的情况下，就返回自身
 		if (getMethods().isEmpty()) {
 			if (RequestMethod.OPTIONS.name().equals(request.getMethod()) &&
 					!DispatcherType.ERROR.equals(request.getDispatcherType())) {
-
+				// 我们处理透明选项，如果没有显现报关单因此不能匹配
 				return null; // We handle OPTIONS transparently, so don't match if no explicit declarations
 			}
 			return this;
 		}
-
+		// 非空，逐个匹配
 		return matchRequestMethod(request.getMethod());
 	}
 
