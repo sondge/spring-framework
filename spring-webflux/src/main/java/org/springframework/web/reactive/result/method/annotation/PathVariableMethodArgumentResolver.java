@@ -16,9 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
@@ -32,6 +29,9 @@ import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Resolves method arguments annotated with @{@link PathVariable}.
@@ -70,6 +70,7 @@ public class PathVariableMethodArgumentResolver extends AbstractNamedValueSyncAr
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
+		// 检查注解参数没有被包装
 		return checkAnnotatedParamNoReactiveWrapper(parameter, PathVariable.class, this::singlePathVariable);
 	}
 
@@ -79,14 +80,19 @@ public class PathVariableMethodArgumentResolver extends AbstractNamedValueSyncAr
 
 	@Override
 	protected NamedValueInfo createNamedValueInfo(MethodParameter parameter) {
+		// 获取 PathVariable 注解
 		PathVariable ann = parameter.getParameterAnnotation(PathVariable.class);
+		// 断言是否为空
 		Assert.state(ann != null, "No PathVariable annotation");
+		// 创建 PathVariableNameValueInfo 变量
 		return new PathVariableNamedValueInfo(ann);
 	}
 
 	@Override
 	protected Object resolveNamedValue(String name, MethodParameter parameter, ServerWebExchange exchange) {
+		// 获取属性名称
 		String attributeName = HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE;
+		// 获取属性或者默认值
 		return exchange.getAttributeOrDefault(attributeName, Collections.emptyMap()).get(name);
 	}
 

@@ -16,13 +16,13 @@
 
 package org.springframework.web.servlet.handler;
 
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.Servlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Adapter to use the Servlet interface with the generic DispatcherServlet.
@@ -46,16 +46,16 @@ import org.springframework.web.servlet.ModelAndView;
  * parameters etc.
  *
  * @author Juergen Hoeller
- * @since 1.1.5
  * @see javax.servlet.Servlet
  * @see javax.servlet.http.HttpServlet
  * @see SimpleServletPostProcessor
  * @see org.springframework.web.servlet.mvc.ServletWrappingController
+ * @since 1.1.5
  */
 public class SimpleServletHandlerAdapter implements HandlerAdapter {
-
 	@Override
 	public boolean supports(Object handler) {
+		// 判断 handler 是否是 Servlet 类型的
 		return (handler instanceof Servlet);
 	}
 
@@ -63,13 +63,14 @@ public class SimpleServletHandlerAdapter implements HandlerAdapter {
 	@Nullable
 	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-
+		// 调用 service 方法
 		((Servlet) handler).service(request, response);
 		return null;
 	}
 
 	@Override
 	public long getLastModified(HttpServletRequest request, Object handler) {
+		// 不支持记录上次修改时间
 		return -1;
 	}
 

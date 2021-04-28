@@ -16,18 +16,6 @@
 
 package org.springframework.web.servlet.support;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,6 +25,17 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.HttpSessionRequiredException;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Convenient superclass for any kind of web content generator,
@@ -129,10 +128,15 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 	 * or {@code false} if it should be unrestricted
 	 */
 	public WebContentGenerator(boolean restrictDefaultSupportedMethods) {
+		// 如果需要严格校验
 		if (restrictDefaultSupportedMethods) {
+			// 定义列表
 			this.supportedMethods = new LinkedHashSet<>(4);
+			// 添加 GET 方法
 			this.supportedMethods.add(METHOD_GET);
+			// 添加  HEAD 方法
 			this.supportedMethods.add(METHOD_HEAD);
+			// 添加 POST 方法
 			this.supportedMethods.add(METHOD_POST);
 		}
 		initAllowHeader();
@@ -171,23 +175,34 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 	}
 
 	private void initAllowHeader() {
+		// 定义集合
 		Collection<String> allowedMethods;
+		// 如果当前集合
 		if (this.supportedMethods == null) {
+			// 定义列表
 			allowedMethods = new ArrayList<>(HttpMethod.values().length - 1);
+			// 循环遍历 HttpMethod 方法
 			for (HttpMethod method : HttpMethod.values()) {
+				// 如果不是 TRACE 方法
 				if (method != HttpMethod.TRACE) {
+					// 添加方法名
 					allowedMethods.add(method.name());
 				}
 			}
 		}
+		// 如果支持方法包含 OPTIONS 方法名称
 		else if (this.supportedMethods.contains(HttpMethod.OPTIONS.name())) {
+			// 获取当前方法
 			allowedMethods = this.supportedMethods;
 		}
 		else {
+			// 继续
 			allowedMethods = new ArrayList<>(this.supportedMethods);
+			// 加入 OPTIONS
 			allowedMethods.add(HttpMethod.OPTIONS.name());
 
 		}
+		// 转化当前允许方法
 		this.allowHeader = StringUtils.collectionToCommaDelimitedString(allowedMethods);
 	}
 
@@ -376,12 +391,14 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 	 */
 	protected final void checkRequest(HttpServletRequest request) throws ServletException {
 		// Check whether we should support the request method.
+		// 检查是否我们应该支持这个请求方法
 		String method = request.getMethod();
 		if (this.supportedMethods != null && !this.supportedMethods.contains(method)) {
 			throw new HttpRequestMethodNotSupportedException(method, this.supportedMethods);
 		}
 
 		// Check whether a session is required.
+		// 检查是否 session 是否必须的
 		if (this.requireSession && request.getSession(false) == null) {
 			throw new HttpSessionRequiredException("Pre-existing session required but none found");
 		}

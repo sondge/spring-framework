@@ -16,15 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.concurrent.Callable;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpHeaders;
@@ -43,6 +34,14 @@ import org.springframework.web.method.support.InvocableHandlerMethod;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.View;
 import org.springframework.web.util.NestedServletException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.concurrent.Callable;
 
 /**
  * Extends {@link InvocableHandlerMethod} with the ability to handle return
@@ -63,7 +62,9 @@ import org.springframework.web.util.NestedServletException;
 public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 
 	private static final Method CALLABLE_METHOD = ClassUtils.getMethod(Callable.class, "call");
-
+	/**
+	 * 返回结果处理器
+	 */
 	@Nullable
 	private HandlerMethodReturnValueHandlerComposite returnValueHandlers;
 
@@ -101,25 +102,31 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 	 */
 	public void invokeAndHandle(ServletWebRequest webRequest, ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
-
+		// 执行调用
 		Object returnValue = invokeForRequest(webRequest, mavContainer, providedArgs);
+		// 设置相应状态码
 		setResponseStatus(webRequest);
-
+		// 设置 ModelAndViewContainer 请求为已处理
 		if (returnValue == null) {
+			// 请求是否没有修改或者相应状态不为空或者没有请求处理器
 			if (isRequestNotModified(webRequest) || getResponseStatus() != null || mavContainer.isRequestHandled()) {
+				// 如果必要则禁用内容缓存
 				disableContentCachingIfNecessary(webRequest);
+				// 设置请求已处理
 				mavContainer.setRequestHandled(true);
 				return;
 			}
 		}
+		// 如果已经有相应状态，设置请求已经处理
 		else if (StringUtils.hasText(getResponseStatusReason())) {
 			mavContainer.setRequestHandled(true);
 			return;
 		}
-
+		// 设置请求未处理
 		mavContainer.setRequestHandled(false);
 		Assert.state(this.returnValueHandlers != null, "No return value handlers");
 		try {
+			// 尝试处理返回值
 			this.returnValueHandlers.handleReturnValue(
 					returnValue, getReturnValueType(returnValue), mavContainer, webRequest);
 		}
@@ -135,11 +142,13 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 	 * Set the response status according to the {@link ResponseStatus} annotation.
 	 */
 	private void setResponseStatus(ServletWebRequest webRequest) throws IOException {
+		// 获得状态吗
 		HttpStatus status = getResponseStatus();
+		// 如果状态码为空
 		if (status == null) {
 			return;
 		}
-
+		// 设置相应的状态码
 		HttpServletResponse response = webRequest.getResponse();
 		if (response != null) {
 			String reason = getResponseStatusReason();
@@ -147,11 +156,13 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 				response.sendError(status.value(), reason);
 			}
 			else {
+				// 无 reason，则仅设置 status
 				response.setStatus(status.value());
 			}
 		}
 
 		// To be picked up by RedirectView
+		// 为了 RedirectView，索引进行设置
 		webRequest.getRequest().setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, status);
 	}
 

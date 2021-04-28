@@ -16,12 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -45,10 +39,17 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
+
 /**
  * Resolves method arguments annotated with {@code @RequestBody} and handles return
  * values from methods annotated with {@code @ResponseBody} by reading and writing
  * to the body of the request or response with an {@link HttpMessageConverter}.
+ *
+ * 处理 {@link RequestBody} 和处理 {@link ResponseBody} 的处理
  *
  * <p>An {@code @RequestBody} method argument is also validated if it is annotated
  * with {@code @javax.validation.Valid}. In case of validation failure,
@@ -66,6 +67,10 @@ public class RequestResponseBodyMethodProcessor extends AbstractMessageConverter
 	 * Basic constructor with converters only. Suitable for resolving
 	 * {@code @RequestBody}. For handling {@code @ResponseBody} consider also
 	 * providing a {@code ContentNegotiationManager}.
+	 *
+	 * 根据给定的 HttpMessageConverter 数组构造指定的 RequestResponseBodyMethodProcessor
+	 * 关于 HttpMessageConverter：我们想要将 POJO 对象，返回 JSON 数据给前端，就会使用到
+	 * {@link org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter}
 	 */
 	public RequestResponseBodyMethodProcessor(List<HttpMessageConverter<?>> converters) {
 		super(converters);
@@ -108,11 +113,13 @@ public class RequestResponseBodyMethodProcessor extends AbstractMessageConverter
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
+		// 判断参数是否有 RequestBody 注解
 		return parameter.hasParameterAnnotation(RequestBody.class);
 	}
 
 	@Override
 	public boolean supportsReturnType(MethodParameter returnType) {
+		// 判断返回值上是否有 ResponseBody 注解，返回值类型上是否有 ResponseBody 注解
 		return (AnnotatedElementUtils.hasAnnotation(returnType.getContainingClass(), ResponseBody.class) ||
 				returnType.hasMethodAnnotation(ResponseBody.class));
 	}
@@ -172,12 +179,14 @@ public class RequestResponseBodyMethodProcessor extends AbstractMessageConverter
 	public void handleReturnValue(@Nullable Object returnValue, MethodParameter returnType,
 			ModelAndViewContainer mavContainer, NativeWebRequest webRequest)
 			throws IOException, HttpMediaTypeNotAcceptableException, HttpMessageNotWritableException {
-
+		// 设置已处理
 		mavContainer.setRequestHandled(true);
+		// 创建请求和相应
 		ServletServerHttpRequest inputMessage = createInputMessage(webRequest);
 		ServletServerHttpResponse outputMessage = createOutputMessage(webRequest);
 
 		// Try even with null return value. ResponseBodyAdvice could get involved.
+		// 使用 HttpMessageConverter 对对象进行转换，并写入相应中
 		writeWithMessageConverters(returnValue, returnType, inputMessage, outputMessage);
 	}
 

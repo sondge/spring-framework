@@ -28,6 +28,8 @@ import org.springframework.web.servlet.RequestToViewNameTranslator;
  * Handles return values of types {@code void} and {@code String} interpreting them
  * as view name reference. As of 4.2, it also handles general {@code CharSequence}
  * types, e.g. {@code StringBuilder} or Groovy's {@code GString}, as view names.
+ * <p>
+ * 处理返回结果是视图名的 ReturnValueHandler 实现类
  *
  * <p>A {@code null} return value, either due to a {@code void} return type or
  * as the actual return value is left as-is allowing the configured
@@ -43,7 +45,9 @@ import org.springframework.web.servlet.RequestToViewNameTranslator;
  * @since 3.1
  */
 public class ViewNameMethodReturnValueHandler implements HandlerMethodReturnValueHandler {
-
+	/**
+	 * 重定向的表达式数组
+	 */
 	@Nullable
 	private String[] redirectPatterns;
 
@@ -53,6 +57,7 @@ public class ViewNameMethodReturnValueHandler implements HandlerMethodReturnValu
 	 * to use in order to recognize custom redirect prefixes in addition to "redirect:".
 	 * <p>Note that simply configuring this property will not make a custom redirect prefix work.
 	 * There must be a custom View that recognizes the prefix as well.
+	 *
 	 * @since 4.1
 	 */
 	public void setRedirectPatterns(@Nullable String... redirectPatterns) {
@@ -76,16 +81,18 @@ public class ViewNameMethodReturnValueHandler implements HandlerMethodReturnValu
 
 	@Override
 	public void handleReturnValue(@Nullable Object returnValue, MethodParameter returnType,
-			ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
-
+								  ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
+		// 如果是 String 类型的
 		if (returnValue instanceof CharSequence) {
+			// 设置视图名称到 mavContainer 中
 			String viewName = returnValue.toString();
 			mavContainer.setViewName(viewName);
+			//如果是重定向，则标记到 mavContainer 中
 			if (isRedirectViewName(viewName)) {
 				mavContainer.setRedirectModelScenario(true);
 			}
-		}
-		else if (returnValue != null) {
+		// 如果是非 String 类型，而非 void，则抛出 UnsupportedOperationException 异常
+		} else if (returnValue != null) {
 			// should not happen
 			throw new UnsupportedOperationException("Unexpected return type: " +
 					returnType.getParameterType().getName() + " in method: " + returnType.getMethod());
@@ -96,11 +103,13 @@ public class ViewNameMethodReturnValueHandler implements HandlerMethodReturnValu
 	 * Whether the given view name is a redirect view reference.
 	 * The default implementation checks the configured redirect patterns and
 	 * also if the view name starts with the "redirect:" prefix.
+	 *
 	 * @param viewName the view name to check, never {@code null}
 	 * @return "true" if the given view name is recognized as a redirect view
 	 * reference; "false" otherwise.
 	 */
 	protected boolean isRedirectViewName(String viewName) {
+		// 符合 redirectPattern 表达式或者一 redirect: 开头
 		return (PatternMatchUtils.simpleMatch(this.redirectPatterns, viewName) || viewName.startsWith("redirect:"));
 	}
 

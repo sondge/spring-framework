@@ -16,10 +16,6 @@
 
 package org.springframework.web.method.support;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.ui.Model;
@@ -28,11 +24,17 @@ import org.springframework.validation.support.BindingAwareModelMap;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.bind.support.SimpleSessionStatus;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Records model and view related decisions made by
  * {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers} and
  * {@link HandlerMethodReturnValueHandler HandlerMethodReturnValueHandlers} during the course of invocation of
  * a controller method.
+ * <p>
+ * 主要作为 ModelAndView 容器，
  *
  * <p>The {@link #setRequestHandled} flag can be used to indicate the request
  * has been handled directly and view resolution is not required.
@@ -49,27 +51,48 @@ import org.springframework.web.bind.support.SimpleSessionStatus;
  */
 public class ModelAndViewContainer {
 
+	/**
+	 * 是否在重定向时忽略 {@link #redirectModel}
+	 */
 	private boolean ignoreDefaultModelOnRedirect = false;
 
+	/**
+	 * 视图， Object 类型
+	 * <p>
+	 * 实际情况下也可以是 String 类型的视图
+	 */
 	@Nullable
 	private Object view;
-
+	/**
+	 * 默认使用的 Model。实际上是个 Map
+	 */
 	private final ModelMap defaultModel = new BindingAwareModelMap();
-
+	/**
+	 * 重定向的 model，在重定向时使用
+	 */
 	@Nullable
 	private ModelMap redirectModel;
-
+	/**
+	 * 处理器返回重定向视图的标识
+	 */
 	private boolean redirectModelScenario = false;
 
+	/**
+	 * HTTP 相应状态
+	 */
 	@Nullable
 	private HttpStatus status;
 
 	private final Set<String> noBinding = new HashSet<>(4);
 
 	private final Set<String> bindingDisabled = new HashSet<>(4);
-
+	/**
+	 * 用于设置 SessionAttribute 的标识
+	 */
 	private final SessionStatus sessionStatus = new SimpleSessionStatus();
-
+	/**
+	 * 请求是否处理完的标识
+	 */
 	private boolean requestHandled = false;
 
 
@@ -92,6 +115,8 @@ public class ModelAndViewContainer {
 	/**
 	 * Set a view name to be resolved by the DispatcherServlet via a ViewResolver.
 	 * Will override any pre-existing view name or View.
+	 *
+	 * 设置视图名称
 	 */
 	public void setViewName(@Nullable String viewName) {
 		this.view = viewName;
@@ -100,6 +125,8 @@ public class ModelAndViewContainer {
 	/**
 	 * Return the view name to be resolved by the DispatcherServlet via a
 	 * ViewResolver, or {@code null} if a View object is set.
+	 *
+	 * 获取视图名称
 	 */
 	@Nullable
 	public String getViewName() {
@@ -109,6 +136,8 @@ public class ModelAndViewContainer {
 	/**
 	 * Set a View object to be used by the DispatcherServlet.
 	 * Will override any pre-existing view name or View.
+	 *
+	 * 设置对应的视图
 	 */
 	public void setView(@Nullable Object view) {
 		this.view = view;
@@ -117,6 +146,8 @@ public class ModelAndViewContainer {
 	/**
 	 * Return the View object, or {@code null} if we using a view name
 	 * to be resolved by the DispatcherServlet via a ViewResolver.
+	 *
+	 * 获取视图
 	 */
 	@Nullable
 	public Object getView() {
@@ -126,6 +157,8 @@ public class ModelAndViewContainer {
 	/**
 	 * Whether the view is a view reference specified via a name to be
 	 * resolved by the DispatcherServlet via a ViewResolver.
+	 *
+	 * 这个视图是否是 String 类型的
 	 */
 	public boolean isViewReference() {
 		return (this.view instanceof String);
@@ -138,10 +171,10 @@ public class ModelAndViewContainer {
 	 * a method argument) and {@code ignoreDefaultModelOnRedirect=false}.
 	 */
 	public ModelMap getModel() {
+		// 是否使用默认的 model
 		if (useDefaultModel()) {
 			return this.defaultModel;
-		}
-		else {
+		} else {
 			if (this.redirectModel == null) {
 				this.redirectModel = new ModelMap();
 			}
@@ -153,6 +186,7 @@ public class ModelAndViewContainer {
 	 * Whether to use the default model or the redirect model.
 	 */
 	private boolean useDefaultModel() {
+		// 重定向视图标识为 false，并且不忽略重定向 Model 并且重定向 Model 返回为空
 		return (!this.redirectModelScenario || (this.redirectModel == null && !this.ignoreDefaultModelOnRedirect));
 	}
 
@@ -163,6 +197,7 @@ public class ModelAndViewContainer {
 	 * model (redirect URL preparation). Use of this method may be needed for
 	 * advanced cases when access to the "default" model is needed regardless,
 	 * e.g. to save model attributes specified via {@code @SessionAttributes}.
+	 *
 	 * @return the default model (never {@code null})
 	 * @since 4.1.4
 	 */
@@ -191,6 +226,7 @@ public class ModelAndViewContainer {
 	/**
 	 * Provide an HTTP status that will be passed on to with the
 	 * {@code ModelAndView} used for view rendering purposes.
+	 *
 	 * @since 4.3
 	 */
 	public void setStatus(@Nullable HttpStatus status) {
@@ -199,6 +235,7 @@ public class ModelAndViewContainer {
 
 	/**
 	 * Return the configured HTTP status, if any.
+	 *
 	 * @since 4.3
 	 */
 	@Nullable
@@ -209,6 +246,7 @@ public class ModelAndViewContainer {
 	/**
 	 * Programmatically register an attribute for which data binding should not occur,
 	 * not even for a subsequent {@code @ModelAttribute} declaration.
+	 *
 	 * @param attributeName the name of the attribute
 	 * @since 4.3
 	 */
@@ -218,6 +256,7 @@ public class ModelAndViewContainer {
 
 	/**
 	 * Whether binding is disabled for the given model attribute.
+	 *
 	 * @since 4.3
 	 */
 	public boolean isBindingDisabled(String name) {
@@ -229,14 +268,14 @@ public class ModelAndViewContainer {
 	 * corresponding to an {@code @ModelAttribute(binding=true/false)} declaration.
 	 * <p>Note: While this flag will be taken into account by {@link #isBindingDisabled},
 	 * a hard {@link #setBindingDisabled} declaration will always override it.
+	 *
 	 * @param attributeName the name of the attribute
 	 * @since 4.3.13
 	 */
 	public void setBinding(String attributeName, boolean enabled) {
 		if (!enabled) {
 			this.noBinding.add(attributeName);
-		}
-		else {
+		} else {
 			this.noBinding.remove(attributeName);
 		}
 	}
@@ -334,19 +373,16 @@ public class ModelAndViewContainer {
 		if (!isRequestHandled()) {
 			if (isViewReference()) {
 				sb.append("reference to view with name '").append(this.view).append("'");
-			}
-			else {
+			} else {
 				sb.append("View is [").append(this.view).append(']');
 			}
 			if (useDefaultModel()) {
 				sb.append("; default model ");
-			}
-			else {
+			} else {
 				sb.append("; redirect model ");
 			}
 			sb.append(getModel());
-		}
-		else {
+		} else {
 			sb.append("Request handled directly");
 		}
 		return sb.toString();

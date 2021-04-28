@@ -16,10 +16,6 @@
 
 package org.springframework.web.method.support;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -32,30 +28,41 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.HandlerMethod;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
 /**
  * Extension of {@link HandlerMethod} that invokes the underlying method with
  * argument values resolved from the current HTTP request through a list of
  * {@link HandlerMethodArgumentResolver}.
+ *
+ * 扩展 HandlerMethod 是为了执行这个潜在的方法，和参数值，解析这个当前 Http 请求通过一个 HandlerMethodArgumentResolver 列表
  *
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
  * @since 3.1
  */
 public class InvocableHandlerMethod extends HandlerMethod {
-
+	// 空参数
 	private static final Object[] EMPTY_ARGS = new Object[0];
 
-
+	// 处理器方法参数解析器合成器
 	private HandlerMethodArgumentResolverComposite resolvers = new HandlerMethodArgumentResolverComposite();
-
+	// 定义参数名称发现器
 	private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
+	/**
+	 * web 数据绑定工厂
+	 */
 	@Nullable
 	private WebDataBinderFactory dataBinderFactory;
 
 
 	/**
 	 * Create an instance from a {@code HandlerMethod}.
+	 *
+	 * 根据给定的 HandlerMethod 创建一个新的工厂
 	 */
 	public InvocableHandlerMethod(HandlerMethod handlerMethod) {
 		super(handlerMethod);
@@ -63,6 +70,8 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
 	/**
 	 * Create an instance from a bean instance and a method.
+	 *
+	 * 根据给定的bean 和方法创建一个实例
 	 */
 	public InvocableHandlerMethod(Object bean, Method method) {
 		super(bean, method);
@@ -70,6 +79,8 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
 	/**
 	 * Construct a new handler method with the given bean instance, method name and parameters.
+	 *
+	 * 构造一个新的处理器方法根据给定实例，方法名称和参数类型
 	 * @param bean the object bean
 	 * @param methodName the method name
 	 * @param parameterTypes the method parameter types
@@ -130,11 +141,12 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	@Nullable
 	public Object invokeForRequest(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
-
+		// 获取参数值
 		Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Arguments: " + Arrays.toString(args));
 		}
+		// 执行调用
 		return doInvoke(args);
 	}
 
@@ -146,24 +158,28 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	 */
 	protected Object[] getMethodArgumentValues(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
-
+		// 方法的参数信息的数组
 		MethodParameter[] parameters = getMethodParameters();
+		// 解析后的参数结果数组
 		if (ObjectUtils.isEmpty(parameters)) {
 			return EMPTY_ARGS;
 		}
-
+		// 遍历开始解析
 		Object[] args = new Object[parameters.length];
 		for (int i = 0; i < parameters.length; i++) {
+			// 获取当前遍历的参数,并且设置 parameterNameDiscoverer 到其中
 			MethodParameter parameter = parameters[i];
 			parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
 			args[i] = findProvidedArgument(parameter, providedArgs);
 			if (args[i] != null) {
 				continue;
 			}
+			// 判断参数解析器是否支持当前的参数解析
 			if (!this.resolvers.supportsParameter(parameter)) {
 				throw new IllegalStateException(formatArgumentError(parameter, "No suitable resolver"));
 			}
 			try {
+				// 执行解析。解析成功后，则进入下一个参数解析
 				args[i] = this.resolvers.resolveArgument(parameter, mavContainer, request, this.dataBinderFactory);
 			}
 			catch (Exception ex) {
@@ -185,8 +201,10 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	 */
 	@Nullable
 	protected Object doInvoke(Object... args) throws Exception {
+		// 设置权限
 		ReflectionUtils.makeAccessible(getBridgedMethod());
 		try {
+			// 执行调用
 			return getBridgedMethod().invoke(getBean(), args);
 		}
 		catch (IllegalArgumentException ex) {

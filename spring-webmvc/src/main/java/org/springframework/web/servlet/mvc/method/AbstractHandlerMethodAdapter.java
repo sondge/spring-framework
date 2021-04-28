@@ -16,15 +16,15 @@
 
 package org.springframework.web.servlet.mvc.method;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.core.Ordered;
 import org.springframework.lang.Nullable;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.WebContentGenerator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Abstract base class for {@link HandlerAdapter} implementations that support
@@ -40,6 +40,8 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 
 	public AbstractHandlerMethodAdapter() {
 		// no restriction of HTTP methods by default
+		// 调用 WebContentGenerator 类的构造方法
+		// 参数 restrictDefaultSupportedMethod 参数为 false，表示为 false，表示不需要严格校验 HttpMethod
 		super(false);
 	}
 
@@ -66,11 +68,14 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 	 */
 	@Override
 	public final boolean supports(Object handler) {
+		// 如果处理器类型是 HandlerMethod 并且支持 HandlerMethod
 		return (handler instanceof HandlerMethod && supportsInternal((HandlerMethod) handler));
 	}
 
 	/**
 	 * Given a handler method, return whether or not this adapter can support it.
+	 *
+	 * 根据给定的 HandlerMethod，返回是否适配它
 	 * @param handlerMethod the handler method to check
 	 * @return whether or not this adapter can adapt the given method
 	 */
@@ -78,6 +83,8 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 
 	/**
 	 * This implementation expects the handler to be an {@link HandlerMethod}.
+	 *
+	 * 这个实现期望处理器是一个 HandlerMethod
 	 */
 	@Override
 	@Nullable
@@ -103,6 +110,8 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 
 	/**
 	 * This implementation expects the handler to be an {@link HandlerMethod}.
+	 *
+	 * 获取上一次修改时间
 	 */
 	@Override
 	public final long getLastModified(HttpServletRequest request, Object handler) {

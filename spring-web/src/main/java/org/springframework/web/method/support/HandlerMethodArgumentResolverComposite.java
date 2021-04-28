@@ -16,16 +16,16 @@
 
 package org.springframework.web.method.support;
 
+import org.springframework.core.MethodParameter;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.core.MethodParameter;
-import org.springframework.lang.Nullable;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
 
 /**
  * Resolves method parameters by delegating to a list of registered
@@ -38,14 +38,21 @@ import org.springframework.web.context.request.NativeWebRequest;
  */
 public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgumentResolver {
 
+	/**
+	 * HandlerMethodArgumentResolver 数组
+	 */
 	private final List<HandlerMethodArgumentResolver> argumentResolvers = new ArrayList<>();
-
+	/**
+	 * MethodParameter 与 HandlerMethodArgumentResolver
+	 */
 	private final Map<MethodParameter, HandlerMethodArgumentResolver> argumentResolverCache =
 			new ConcurrentHashMap<>(256);
 
 
 	/**
 	 * Add the given {@link HandlerMethodArgumentResolver}.
+	 *
+	 * 增加指定的 HandlerMethodArgumentResolver
 	 */
 	public HandlerMethodArgumentResolverComposite addResolver(HandlerMethodArgumentResolver resolver) {
 		this.argumentResolvers.add(resolver);
@@ -54,6 +61,8 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 
 	/**
 	 * Add the given {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers}.
+	 *
+	 * 增加指定的 HandlerMethodArgumentResolvers
 	 * @since 4.3
 	 */
 	public HandlerMethodArgumentResolverComposite addResolvers(
@@ -96,9 +105,12 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 	/**
 	 * Whether the given {@linkplain MethodParameter method parameter} is
 	 * supported by any registered {@link HandlerMethodArgumentResolver}.
+	 *
+	 * 是否支持给定的参数类型
 	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
+		// 获取给定的参数类型，并且判断是否为空
 		return getArgumentResolver(parameter) != null;
 	}
 
@@ -112,12 +124,14 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 	@Nullable
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
-
+		// 获取对应的 HandlerMethodArgumentResolver 对象
 		HandlerMethodArgumentResolver resolver = getArgumentResolver(parameter);
+		// 如果获取不了解析器，则抛出异常
 		if (resolver == null) {
 			throw new IllegalArgumentException("Unsupported parameter type [" +
 					parameter.getParameterType().getName() + "]. supportsParameter should be called first.");
 		}
+		// 执行解析参数
 		return resolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
 	}
 
@@ -127,9 +141,12 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 	 */
 	@Nullable
 	private HandlerMethodArgumentResolver getArgumentResolver(MethodParameter parameter) {
+		// 从缓存中获取对应的 HandlerMethodArgumentResolver
 		HandlerMethodArgumentResolver result = this.argumentResolverCache.get(parameter);
 		if (result == null) {
+			// 获取不到，则遍历整个 HandlerMethodArgumentResolver 数组，逐个判断是否支持
 			for (HandlerMethodArgumentResolver resolver : this.argumentResolvers) {
+				// 如果支持，则添加到 argumentResolvers,并返回
 				if (resolver.supportsParameter(parameter)) {
 					result = resolver;
 					this.argumentResolverCache.put(parameter, result);

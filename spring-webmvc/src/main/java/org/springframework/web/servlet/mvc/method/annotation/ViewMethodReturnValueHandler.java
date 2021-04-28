@@ -28,6 +28,8 @@ import org.springframework.web.servlet.View;
 /**
  * Handles return values that are of type {@link View}.
  *
+ *
+ *
  * <p>A {@code null} return value is left as-is leaving it to the configured
  * {@link RequestToViewNameTranslator} to select a view name by convention.
  *

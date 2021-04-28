@@ -16,17 +16,16 @@
 
 package org.springframework.web.reactive.result.method;
 
-import java.lang.annotation.Annotation;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.util.Assert;
+
+import java.lang.annotation.Annotation;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 /**
  * Base class for {@link HandlerMethodArgumentResolver} implementations with access to a
@@ -112,19 +111,24 @@ public abstract class HandlerMethodArgumentResolverSupport implements HandlerMet
 	 */
 	protected <A extends Annotation> boolean checkAnnotatedParamNoReactiveWrapper(
 			MethodParameter parameter, Class<A> annotationType, BiPredicate<A, Class<?>> typePredicate) {
-
+		// 获取对应的注解
 		A annotation = parameter.getParameterAnnotation(annotationType);
+		// 如果注解为空，直接返回 false
 		if (annotation == null) {
 			return false;
 		}
-
+		// 获取嵌套参数
 		parameter = parameter.nestedIfOptional();
+		// 获取参数的类型
 		Class<?> type = parameter.getNestedParameterType();
-
+		// 获取对应类型的适配器
 		ReactiveAdapter adapter = getAdapterRegistry().getAdapter(type);
 		if (adapter != null) {
+			// 断言适配器是否有值
 			assertHasValues(adapter, parameter);
+			// 获取嵌套参数
 			parameter = parameter.nested();
+			// 获取嵌套参数的类型
 			type = parameter.getNestedParameterType();
 		}
 
