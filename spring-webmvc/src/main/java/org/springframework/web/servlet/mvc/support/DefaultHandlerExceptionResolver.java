@@ -16,15 +16,8 @@
 
 package org.springframework.web.servlet.mvc.support;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.Ordered;
@@ -52,6 +45,11 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * The default implementation of the {@link org.springframework.web.servlet.HandlerExceptionResolver}
@@ -253,11 +251,14 @@ public class DefaultHandlerExceptionResolver extends AbstractHandlerExceptionRes
 	 */
 	protected ModelAndView handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
 			HttpServletRequest request, HttpServletResponse response, @Nullable Object handler) throws IOException {
-
+		// 获取支持的方法
 		String[] supportedMethods = ex.getSupportedMethods();
+		// 如果支持的方法不为空
 		if (supportedMethods != null) {
+			// 设置头部
 			response.setHeader("Allow", StringUtils.arrayToDelimitedString(supportedMethods, ", "));
 		}
+		// 发送错误
 		response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, ex.getMessage());
 		return new ModelAndView();
 	}

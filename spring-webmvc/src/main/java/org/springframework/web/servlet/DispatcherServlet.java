@@ -768,17 +768,21 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * we default to no exception resolver.
 	 */
 	private void initHandlerExceptionResolvers(ApplicationContext context) {
+		// 置空 handlerExceptionResolvers 处理
 		this.handlerExceptionResolvers = null;
-
+		// 情况一：自动扫描 HandlerExceptionResolver 类型的 Bean 们
 		if (this.detectAllHandlerExceptionResolvers) {
 			// Find all HandlerExceptionResolvers in the ApplicationContext, including ancestor contexts.
 			Map<String, HandlerExceptionResolver> matchingBeans = BeanFactoryUtils
 					.beansOfTypeIncludingAncestors(context, HandlerExceptionResolver.class, true, false);
+			// 如果匹配器不为空
 			if (!matchingBeans.isEmpty()) {
 				this.handlerExceptionResolvers = new ArrayList<>(matchingBeans.values());
 				// We keep HandlerExceptionResolvers in sorted order.
+				// 根据注解进行排序
 				AnnotationAwareOrderComparator.sort(this.handlerExceptionResolvers);
 			}
+			// 情况二：获得名字 HANDLER_EXCEPTION_RESOLVER_BEAN_NAME 的 Bean 们
 		} else {
 			try {
 				HandlerExceptionResolver her =
@@ -791,6 +795,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		// Ensure we have at least some HandlerExceptionResolvers, by registering
 		// default HandlerExceptionResolvers if no other resolvers are found.
+		// 情况三，如果未获得到，则获得默认配置 HandlerExceptionResolver 类
 		if (this.handlerExceptionResolvers == null) {
 			this.handlerExceptionResolvers = getDefaultStrategies(context, HandlerExceptionResolver.class);
 			if (logger.isTraceEnabled()) {
@@ -960,7 +965,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		String value = defaultStrategies.getProperty(key);
 		// 如果 value 不为空
 		if (value != null) {
-			// 基于 "," 分隔，创建 chassName 数组
+			// 基于 "," 分隔，创建 className 数组
 			String[] classNames = StringUtils.commaDelimitedListToStringArray(value);
 			// 创建 strategies 列表
 			List<T> strategies = new ArrayList<>(classNames.length);

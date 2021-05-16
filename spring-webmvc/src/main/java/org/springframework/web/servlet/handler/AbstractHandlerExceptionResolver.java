@@ -16,19 +16,17 @@
 
 package org.springframework.web.servlet.handler;
 
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.Ordered;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Set;
 
 /**
  * Abstract base class for {@link HandlerExceptionResolver} implementations.
@@ -48,27 +46,45 @@ public abstract class AbstractHandlerExceptionResolver implements HandlerExcepti
 
 
 	/** Logger available to subclasses. */
+	/**
+	 * 获取日志
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	/**
+	 * 定义最低的优先级
+	 */
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
+	/**
+	 * 匹配的处理器对象的集合
+	 */
 	@Nullable
 	private Set<?> mappedHandlers;
 
+	/**
+	 * 匹配的处理器类型的数组
+	 */
 	@Nullable
 	private Class<?>[] mappedHandlerClasses;
 
+	/**
+	 * 添加警告日志
+	 */
 	@Nullable
 	private Log warnLogger;
 
+	/**
+	 * 防止响应缓存
+	 */
 	private boolean preventResponseCaching = false;
 
-
+	/** 设置优先级 **/
 	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	@Override
+	/*获取优先级*/
 	public int getOrder() {
 		return this.order;
 	}
@@ -80,6 +96,8 @@ public abstract class AbstractHandlerExceptionResolver implements HandlerExcepti
 	 * view will apply to all handlers. This means that a specified default error view will be used
 	 * as a fallback for all exceptions; any further HandlerExceptionResolvers in the chain will be
 	 * ignored in this case.
+	 *
+	 * 设置映射处理器
 	 */
 	public void setMappedHandlers(Set<?> mappedHandlers) {
 		this.mappedHandlers = mappedHandlers;
@@ -93,6 +111,8 @@ public abstract class AbstractHandlerExceptionResolver implements HandlerExcepti
 	 * view will apply to all handlers. This means that a specified default error view will be used
 	 * as a fallback for all exceptions; any further HandlerExceptionResolvers in the chain will be
 	 * ignored in this case.
+	 *
+	 * 匹配的处理器类型的数组
 	 */
 	public void setMappedHandlerClasses(Class<?>... mappedHandlerClasses) {
 		this.mappedHandlerClasses = mappedHandlerClasses;
@@ -119,6 +139,8 @@ public abstract class AbstractHandlerExceptionResolver implements HandlerExcepti
 	 * by this exception resolver.
 	 * <p>Default is {@code false}. Switch this to {@code true} in order to
 	 * automatically generate HTTP response headers that suppress response caching.
+	 *
+	 * 设置是否防止响应缓存
 	 */
 	public void setPreventResponseCaching(boolean preventResponseCaching) {
 		this.preventResponseCaching = preventResponseCaching;
@@ -135,20 +157,26 @@ public abstract class AbstractHandlerExceptionResolver implements HandlerExcepti
 	@Nullable
 	public ModelAndView resolveException(
 			HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex) {
-
+		// 判断当前 HandlerExceptionResolver 是否应用到传入的 handler 对象，则返回 true
 		if (shouldApplyTo(request, handler)) {
+			// 阻止响应缓存
 			prepareResponse(ex, response);
+			// 执行解析异常，返回 ModelAndView 对象
 			ModelAndView result = doResolveException(request, response, handler, ex);
+			// 如果 ModelAndView 对象非空，则进行返回
 			if (result != null) {
 				// Print debug message when warn logger is not enabled.
 				if (logger.isDebugEnabled() && (this.warnLogger == null || !this.warnLogger.isWarnEnabled())) {
 					logger.debug("Resolved [" + ex + "]" + (result.isEmpty() ? "" : " to " + result));
 				}
 				// Explicitly configured warn logger in logException method.
+				// 明确地配置警告日志
 				logException(ex, request);
 			}
+			// 返回 ModelAndView 对象
 			return result;
 		}
+		// 不可应用直接返回 null
 		else {
 			return null;
 		}
@@ -169,9 +197,11 @@ public abstract class AbstractHandlerExceptionResolver implements HandlerExcepti
 	 */
 	protected boolean shouldApplyTo(HttpServletRequest request, @Nullable Object handler) {
 		if (handler != null) {
+			// 如果 mappedHandlers 包含 handler 对象，则返回为 true
 			if (this.mappedHandlers != null && this.mappedHandlers.contains(handler)) {
 				return true;
 			}
+			// 如果 mappedHandlerClasses 包含 handler 的类型，则返回 true
 			if (this.mappedHandlerClasses != null) {
 				for (Class<?> handlerClass : this.mappedHandlerClasses) {
 					if (handlerClass.isInstance(handler)) {
@@ -181,6 +211,7 @@ public abstract class AbstractHandlerExceptionResolver implements HandlerExcepti
 			}
 		}
 		// Else only apply if there are no explicit handler mappings.
+		// 如果 mappedHandlers 和 mappedHandlerClasses 都为空，说明直接匹配
 		return (this.mappedHandlers == null && this.mappedHandlerClasses == null);
 	}
 
@@ -220,7 +251,9 @@ public abstract class AbstractHandlerExceptionResolver implements HandlerExcepti
 	 * @see #preventCaching
 	 */
 	protected void prepareResponse(Exception ex, HttpServletResponse response) {
+		// 如果阻止响应缓存
 		if (this.preventResponseCaching) {
+			// 阻止缓存
 			preventCaching(response);
 		}
 	}
@@ -231,6 +264,7 @@ public abstract class AbstractHandlerExceptionResolver implements HandlerExcepti
 	 * @param response current HTTP response
 	 */
 	protected void preventCaching(HttpServletResponse response) {
+		// 加入头信息
 		response.addHeader(HEADER_CACHE_CONTROL, "no-store");
 	}
 

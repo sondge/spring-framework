@@ -16,12 +16,12 @@
 
 package org.springframework.web.servlet.handler;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Abstract base class for
@@ -40,14 +40,19 @@ public abstract class AbstractHandlerMethodExceptionResolver extends AbstractHan
 	 */
 	@Override
 	protected boolean shouldApplyTo(HttpServletRequest request, @Nullable Object handler) {
+		// 如果 handler 为空，则直接调用父方法
 		if (handler == null) {
 			return super.shouldApplyTo(request, null);
 		}
+		// 如果 handler 是 HandlerMethod 类型的情况
 		else if (handler instanceof HandlerMethod) {
+			// 获得真正的 handler
 			HandlerMethod handlerMethod = (HandlerMethod) handler;
 			handler = handlerMethod.getBean();
+			// 调用父类方法
 			return super.shouldApplyTo(request, handler);
 		}
+		// 直接返回 false
 		else {
 			return false;
 		}

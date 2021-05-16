@@ -16,34 +16,41 @@
 
 package org.springframework.web.servlet.handler;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.core.Ordered;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * A {@link HandlerExceptionResolver} that delegates to a list of other
  * {@link HandlerExceptionResolver HandlerExceptionResolvers}.
+ *
+ * 代表 HandlerExceptionResolvers 的符合实现类
  *
  * @author Rossen Stoyanchev
  * @since 3.1
  */
 public class HandlerExceptionResolverComposite implements HandlerExceptionResolver, Ordered {
-
+	/**
+	 * Resolver 数组
+	 */
 	@Nullable
 	private List<HandlerExceptionResolver> resolvers;
-
+	/**
+	 * 设置优先级最低
+	 */
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
 
 	/**
 	 * Set the list of exception resolvers to delegate to.
+	 *
+	 * 设置代表异常解析器的列表
 	 */
 	public void setExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
 		this.resolvers = exceptionResolvers;
@@ -51,15 +58,25 @@ public class HandlerExceptionResolverComposite implements HandlerExceptionResolv
 
 	/**
 	 * Return the list of exception resolvers to delegate to.
+	 *
+	 * 获取代表异常解析器的列表
 	 */
 	public List<HandlerExceptionResolver> getExceptionResolvers() {
 		return (this.resolvers != null ? Collections.unmodifiableList(this.resolvers) : Collections.emptyList());
 	}
 
+	/**
+	 * 设置优先级
+	 * @param order
+	 */
 	public void setOrder(int order) {
 		this.order = order;
 	}
 
+	/**
+	 * 获取优先级
+	 * @return
+	 */
 	@Override
 	public int getOrder() {
 		return this.order;
@@ -68,13 +85,14 @@ public class HandlerExceptionResolverComposite implements HandlerExceptionResolv
 
 	/**
 	 * Resolve the exception by iterating over the list of configured exception resolvers.
+	 *
+	 * 循环解析配置的异常解析器列表来解析这个异常
 	 * <p>The first one to return a {@link ModelAndView} wins. Otherwise {@code null} is returned.
 	 */
 	@Override
 	@Nullable
 	public ModelAndView resolveException(
 			HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex) {
-
 		if (this.resolvers != null) {
 			for (HandlerExceptionResolver handlerExceptionResolver : this.resolvers) {
 				ModelAndView mav = handlerExceptionResolver.resolveException(request, response, handler, ex);

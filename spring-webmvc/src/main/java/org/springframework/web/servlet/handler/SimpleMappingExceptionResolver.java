@@ -16,19 +16,20 @@
 
 package org.springframework.web.servlet.handler;
 
+import org.springframework.lang.Nullable;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.lang.Nullable;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.WebUtils;
-
+// 允许将异常类名称映射到视图名称，无论是一组给定的处理程序还是 DispatcherServlet 中的所有处理程序
+// 错误视图类似于错误页面 JSP, 但可以任何类型的异常一起使用，包括任何已检查的异常，并具有针对特定处理程序的细粒度映射
 /**
  * {@link org.springframework.web.servlet.HandlerExceptionResolver} implementation
  * that allows for mapping exception class names to view names, either for a set of
@@ -46,24 +47,41 @@ import org.springframework.web.util.WebUtils;
 public class SimpleMappingExceptionResolver extends AbstractHandlerExceptionResolver {
 
 	/** The default name of the exception attribute: "exception". */
+	/*默认的异常属性名称*/
 	public static final String DEFAULT_EXCEPTION_ATTRIBUTE = "exception";
 
 
 	@Nullable
+	// 异常的视图映射
 	private Properties exceptionMappings;
 
+	/**
+	 * 排除的异常数组
+	 */
 	@Nullable
 	private Class<?>[] excludedExceptions;
 
 	@Nullable
+	/**
+	 * 默认的视图名
+	 */
 	private String defaultErrorView;
 
 	@Nullable
+	/**
+	 * 默认状态码
+	 */
 	private Integer defaultStatusCode;
 
+	/**
+	 * 状态码的映射
+	 */
 	private Map<String, Integer> statusCodes = new HashMap<>();
 
 	@Nullable
+	/**
+	 * 异常设置到 {@link ModelAndView} 的属性名
+	 */
 	private String exceptionAttribute = DEFAULT_EXCEPTION_ATTRIBUTE;
 
 
@@ -186,14 +204,18 @@ public class SimpleMappingExceptionResolver extends AbstractHandlerExceptionReso
 			HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex) {
 
 		// Expose ModelAndView for chosen error view.
+		// 获得异常对应的视图名称
 		String viewName = determineViewName(ex, request);
 		if (viewName != null) {
 			// Apply HTTP status code for error views, if specified.
 			// Only apply it if we're processing a top-level request.
+			// 获得视图对应的状态码
 			Integer statusCode = determineStatusCode(request, viewName);
+			// 设置状态码到响应
 			if (statusCode != null) {
 				applyStatusCodeIfPossible(request, response, statusCode);
 			}
+			// 创建 ModelAndView 对象，并放回
 			return getModelAndView(viewName, ex, request);
 		}
 		else {
@@ -212,23 +234,29 @@ public class SimpleMappingExceptionResolver extends AbstractHandlerExceptionReso
 	 */
 	@Nullable
 	protected String determineViewName(Exception ex, HttpServletRequest request) {
+		// 定义视图名称
 		String viewName = null;
+		// 如果排除的异常不为空
 		if (this.excludedExceptions != null) {
 			for (Class<?> excludedEx : this.excludedExceptions) {
+				// 如果在 排除的异常中直接返回 null
 				if (excludedEx.equals(ex.getClass())) {
 					return null;
 				}
 			}
 		}
 		// Check for specific exception mappings.
+		// 查找异常映射中的 viewName
 		if (this.exceptionMappings != null) {
 			viewName = findMatchingViewName(this.exceptionMappings, ex);
 		}
 		// Return default error view else, if defined.
+		// 如果视图名称为空，并且默认的视图不为空
 		if (viewName == null && this.defaultErrorView != null) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Resolving to default view '" + this.defaultErrorView + "'");
 			}
+			// 设置默认的错误视图
 			viewName = this.defaultErrorView;
 		}
 		return viewName;
@@ -243,22 +271,33 @@ public class SimpleMappingExceptionResolver extends AbstractHandlerExceptionReso
 	 */
 	@Nullable
 	protected String findMatchingViewName(Properties exceptionMappings, Exception ex) {
+		// 定义 viewName
 		String viewName = null;
+		// 定义主导映射
 		String dominantMapping = null;
+		// 获取最大的深度
 		int deepest = Integer.MAX_VALUE;
+		// 遍历 exceptionMappings 数组，寻找最匹配的视图名
 		for (Enumeration<?> names = exceptionMappings.propertyNames(); names.hasMoreElements();) {
 			String exceptionMapping = (String) names.nextElement();
+			// 获取对应的层级
 			int depth = getDepth(exceptionMapping, ex);
+			// 如果层级更低
 			if (depth >= 0 && (depth < deepest || (depth == deepest &&
 					dominantMapping != null && exceptionMapping.length() > dominantMapping.length()))) {
+				// 重新设置最低的深度
 				deepest = depth;
+				// 设置异常映射
 				dominantMapping = exceptionMapping;
+				// 设置视图名称
 				viewName = exceptionMappings.getProperty(exceptionMapping);
 			}
 		}
+		// 如果不为空，打印日志
 		if (viewName != null && logger.isDebugEnabled()) {
 			logger.debug("Resolving to view '" + viewName + "' based on mapping [" + dominantMapping + "]");
 		}
+		// 返回 viewName
 		return viewName;
 	}
 
@@ -272,14 +311,17 @@ public class SimpleMappingExceptionResolver extends AbstractHandlerExceptionReso
 	}
 
 	private int getDepth(String exceptionMapping, Class<?> exceptionClass, int depth) {
+		// 如果可以匹配的上，直接返回
 		if (exceptionClass.getName().contains(exceptionMapping)) {
 			// Found it!
 			return depth;
 		}
 		// If we've gone as far as we can go and haven't found it...
+		// 如果是 Throwable 类，直接返回 -1
 		if (exceptionClass == Throwable.class) {
 			return -1;
 		}
+		// 递归父类继续匹配
 		return getDepth(exceptionMapping, exceptionClass.getSuperclass(), depth + 1);
 	}
 
@@ -315,11 +357,14 @@ public class SimpleMappingExceptionResolver extends AbstractHandlerExceptionReso
 	 * @see HttpServletResponse#setStatus
 	 */
 	protected void applyStatusCodeIfPossible(HttpServletRequest request, HttpServletResponse response, int statusCode) {
+		// 如果 WebUtils 包含 request
 		if (!WebUtils.isIncludeRequest(request)) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Applying HTTP status " + statusCode);
 			}
+			// 设置状态码
 			response.setStatus(statusCode);
+			// 设置对应的属性
 			request.setAttribute(WebUtils.ERROR_STATUS_CODE_ATTRIBUTE, statusCode);
 		}
 	}
@@ -346,7 +391,9 @@ public class SimpleMappingExceptionResolver extends AbstractHandlerExceptionReso
 	 * @see #setExceptionAttribute
 	 */
 	protected ModelAndView getModelAndView(String viewName, Exception ex) {
+		// 获取新的 modelAndView
 		ModelAndView mv = new ModelAndView(viewName);
+		// 添加 exceptionAttribute
 		if (this.exceptionAttribute != null) {
 			mv.addObject(this.exceptionAttribute, ex);
 		}

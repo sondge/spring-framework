@@ -973,12 +973,17 @@ public class WebMvcConfigurationSupport implements ApplicationContextAware, Serv
 	@Bean
 	public HandlerExceptionResolver handlerExceptionResolver(
 			@Qualifier("mvcContentNegotiationManager") ContentNegotiationManager contentNegotiationManager) {
+		// 创建 HandlerExceptionResolver 数组
 		List<HandlerExceptionResolver> exceptionResolvers = new ArrayList<>();
+		// 添加配置的 HandlerExceptionResolver 到 exceptionResolvers
 		configureHandlerExceptionResolvers(exceptionResolvers);
+		// 如果 exceptionResolvers 为空， 添加默认 HandlerExceptionResolver 数组
 		if (exceptionResolvers.isEmpty()) {
 			addDefaultHandlerExceptionResolvers(exceptionResolvers, contentNegotiationManager);
 		}
+		// 子类定义的 HandlerExceptionResolver 数组，到 exceptionResolvers 中
 		extendHandlerExceptionResolvers(exceptionResolvers);
+		// 创建 HandlerExceptionResolver 数组
 		HandlerExceptionResolverComposite composite = new HandlerExceptionResolverComposite();
 		composite.setOrder(0);
 		composite.setExceptionResolvers(exceptionResolvers);
@@ -1023,26 +1028,35 @@ public class WebMvcConfigurationSupport implements ApplicationContextAware, Serv
 	 */
 	protected final void addDefaultHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers,
 															 ContentNegotiationManager mvcContentNegotiationManager) {
-
+		// 创建 ExceptionHandlerExceptionResolver 对象
 		ExceptionHandlerExceptionResolver exceptionHandlerResolver = createExceptionHandlerExceptionResolver();
+		// 设置管理器
 		exceptionHandlerResolver.setContentNegotiationManager(mvcContentNegotiationManager);
+		// 设置消息转换器
 		exceptionHandlerResolver.setMessageConverters(getMessageConverters());
+		// 设置用户参数解析器
 		exceptionHandlerResolver.setCustomArgumentResolvers(getArgumentResolvers());
+		// 设置用户返回值处理器
 		exceptionHandlerResolver.setCustomReturnValueHandlers(getReturnValueHandlers());
 		if (jackson2Present) {
+			// 设置 ResponseBode 通知器
 			exceptionHandlerResolver.setResponseBodyAdvice(
 					Collections.singletonList(new JsonViewResponseBodyAdvice()));
 		}
+		// 设置 applicationContext
 		if (this.applicationContext != null) {
 			exceptionHandlerResolver.setApplicationContext(this.applicationContext);
 		}
 		exceptionHandlerResolver.afterPropertiesSet();
 		exceptionResolvers.add(exceptionHandlerResolver);
 
+		// 创建 ResponseStatusExceptionResolver 对象
 		ResponseStatusExceptionResolver responseStatusResolver = new ResponseStatusExceptionResolver();
+		// 设置国际换
 		responseStatusResolver.setMessageSource(this.applicationContext);
+		// 添加返回值状态解析器
 		exceptionResolvers.add(responseStatusResolver);
-
+		// 添加默认异常解析器
 		exceptionResolvers.add(new DefaultHandlerExceptionResolver());
 	}
 
