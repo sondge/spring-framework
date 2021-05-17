@@ -47,7 +47,9 @@ import org.springframework.util.ClassUtils;
  * @see JstlView
  */
 public class InternalResourceViewResolver extends UrlBasedViewResolver {
-
+	/**
+	 * 判断 javax.servlet.jsp.jstl.core.Config 是否存在
+	 */
 	private static final boolean jstlPresent = ClassUtils.isPresent(
 			"javax.servlet.jsp.jstl.core.Config", InternalResourceViewResolver.class.getClassLoader());
 
@@ -61,10 +63,12 @@ public class InternalResourceViewResolver extends UrlBasedViewResolver {
 	 * is present.
 	 */
 	public InternalResourceViewResolver() {
+		// 获取对应的 View 类型
 		Class<?> viewClass = requiredViewClass();
 		if (InternalResourceView.class == viewClass && jstlPresent) {
 			viewClass = JstlView.class;
 		}
+		// 设置 viewClass
 		setViewClass(viewClass);
 	}
 
@@ -103,10 +107,13 @@ public class InternalResourceViewResolver extends UrlBasedViewResolver {
 
 	@Override
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+		// 调用父类方法
 		InternalResourceView view = (InternalResourceView) super.buildView(viewName);
 		if (this.alwaysInclude != null) {
+			// 设置 alwaysInclude 属性
 			view.setAlwaysInclude(this.alwaysInclude);
 		}
+		// 设置 preventDispatchLoop 属性
 		view.setPreventDispatchLoop(true);
 		return view;
 	}

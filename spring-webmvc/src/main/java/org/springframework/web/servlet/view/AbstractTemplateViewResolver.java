@@ -28,15 +28,25 @@ package org.springframework.web.servlet.view;
  * @see org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver
  */
 public abstract class AbstractTemplateViewResolver extends UrlBasedViewResolver {
-
+	/**
+	 * 是否将所有的 RequestAttributes 暴露给 View 使用
+	 */
 	private boolean exposeRequestAttributes = false;
-
+	/**
+	 * 当 RequestAttributes 中存在 Model 中同名的参数，是否允许使用 RequestAttributes 将 Model 中的值进行覆盖
+	 */
 	private boolean allowRequestOverride = false;
-
+	/**
+	 * 是否将 SessionAttributes 暴露给 View 使用
+	 */
 	private boolean exposeSessionAttributes = false;
-
+	/**
+	 *  当 SessionAttribute 中存在 Model 中同名参数，是否允许使用 SessionAttribute 将 Model 中的值进行覆盖
+	 */
 	private boolean allowSessionOverride = false;
-
+	/**
+	 * 是否将 RequestContext 暴露给 view 为 Spring 的宏（Macro）所使用
+	 */
 	private boolean exposeSpringMacroHelpers = true;
 
 
@@ -97,7 +107,9 @@ public abstract class AbstractTemplateViewResolver extends UrlBasedViewResolver 
 
 	@Override
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+		// 调用父类方法
 		AbstractTemplateView view = (AbstractTemplateView) super.buildView(viewName);
+		// 设置相关属性
 		view.setExposeRequestAttributes(this.exposeRequestAttributes);
 		view.setAllowRequestOverride(this.allowRequestOverride);
 		view.setExposeSessionAttributes(this.exposeSessionAttributes);

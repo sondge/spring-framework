@@ -16,8 +16,6 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.Locale;
-
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
@@ -26,10 +24,14 @@ import org.springframework.web.context.support.WebApplicationObjectSupport;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
+import java.util.Locale;
+
 /**
  * A simple implementation of {@link org.springframework.web.servlet.ViewResolver}
  * that interprets a view name as a bean name in the current application context,
  * i.e. typically in the XML file of the executing {@code DispatcherServlet}.
+ *
+ * 基于 Bean 的名字获得 View 对象的 ViewResolver 实现类
  *
  * <p>This resolver can be handy for small applications, keeping all definitions
  * ranging from controllers to views in the same place. For larger applications,
@@ -53,7 +55,7 @@ import org.springframework.web.servlet.ViewResolver;
  * @see UrlBasedViewResolver
  */
 public class BeanNameViewResolver extends WebApplicationObjectSupport implements ViewResolver, Ordered {
-
+	// 默认优先级为最低
 	private int order = Ordered.LOWEST_PRECEDENCE;  // default: same as non-Ordered
 
 
@@ -75,11 +77,14 @@ public class BeanNameViewResolver extends WebApplicationObjectSupport implements
 	@Override
 	@Nullable
 	public View resolveViewName(String viewName, Locale locale) throws BeansException {
+		// 获取对应的应用上下文
 		ApplicationContext context = obtainApplicationContext();
+		// 如果 BeanFactory 不包含对应的 Bean，则返回为 null
 		if (!context.containsBean(viewName)) {
 			// Allow for ViewResolver chaining...
 			return null;
 		}
+		// 如果  Bean 对应的 Bean 类型不是 View，则返回 null
 		if (!context.isTypeMatch(viewName, View.class)) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Found bean named '" + viewName + "' but it does not implement View");
@@ -88,6 +93,7 @@ public class BeanNameViewResolver extends WebApplicationObjectSupport implements
 			// let's accept this as a non-match and allow for chaining as well...
 			return null;
 		}
+		// 返回对应的 Bean 对象
 		return context.getBean(viewName, View.class);
 	}
 

@@ -16,13 +16,6 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -34,8 +27,17 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
+import javax.servlet.ServletContext;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+
 /**
  * A {@link org.springframework.web.servlet.ViewResolver} that delegates to others.
+ *
+ * 实现 ViewResolver、Ordered、InitializingBean、ApplicationContextAware、 ServletContextAware 接口，
+ * 是 ViewResolver 的复合类
  *
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
@@ -44,8 +46,14 @@ import org.springframework.web.servlet.ViewResolver;
 public class ViewResolverComposite implements ViewResolver, Ordered, InitializingBean,
 		ApplicationContextAware, ServletContextAware {
 
+	/**
+	 * ViewResolver 数组
+	 */
 	private final List<ViewResolver> viewResolvers = new ArrayList<>();
 
+	/**
+	 * 顺序，默认优先级最低
+	 */
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
 
@@ -95,6 +103,7 @@ public class ViewResolverComposite implements ViewResolver, Ordered, Initializin
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		// 循环遍历 ViewResolver 数组，并对其进行初始化
 		for (ViewResolver viewResolver : this.viewResolvers) {
 			if (viewResolver instanceof InitializingBean) {
 				((InitializingBean) viewResolver).afterPropertiesSet();
@@ -105,6 +114,7 @@ public class ViewResolverComposite implements ViewResolver, Ordered, Initializin
 	@Override
 	@Nullable
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
+		// 循环遍历 viewResolver 数组，解析每个 ViewResolver 的名称，如果是，直接返回
 		for (ViewResolver viewResolver : this.viewResolvers) {
 			View view = viewResolver.resolveViewName(viewName, locale);
 			if (view != null) {

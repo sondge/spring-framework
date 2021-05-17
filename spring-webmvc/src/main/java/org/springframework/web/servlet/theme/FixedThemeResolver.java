@@ -16,15 +16,17 @@
 
 package org.springframework.web.servlet.theme;
 
+import org.springframework.lang.Nullable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.lang.Nullable;
 
 /**
  * {@link org.springframework.web.servlet.ThemeResolver} implementation
  * that simply uses a fixed theme. The fixed name can be defined via
  * the "defaultThemeName" property; out of the box, it is "theme".
+ *
+ * 使用固定的主题实现类
  *
  * <p>Note: Does not support {@code setThemeName}, as the fixed theme
  * cannot be changed.

@@ -16,10 +16,6 @@
 
 package org.springframework.web.servlet.theme;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -27,10 +23,16 @@ import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.util.CookieGenerator;
 import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * {@link ThemeResolver} implementation that uses a cookie sent back to the user
  * in case of a custom setting, with a fallback to the default theme.
  * This is particularly useful for stateless applications without user sessions.
+ *
+ * Cookie 中的主题
  *
  * <p>Custom controllers can thus override the user's theme by calling
  * {@code setThemeName}, e.g. responding to a certain theme change request.
@@ -44,6 +46,8 @@ public class CookieThemeResolver extends CookieGenerator implements ThemeResolve
 
 	/**
 	 * The default theme name used if no alternative is provided.
+	 *
+	 * 默认主题名称
 	 */
 	public static final String ORIGINAL_DEFAULT_THEME_NAME = "theme";
 
@@ -52,12 +56,16 @@ public class CookieThemeResolver extends CookieGenerator implements ThemeResolve
 	 * for overriding a cookie value if the theme has been changed in the
 	 * course of the current request! Use RequestContext.getTheme() to
 	 * retrieve the current theme in controllers or views.
+	 *
+	 * 默认属性名称
 	 * @see org.springframework.web.servlet.support.RequestContext#getTheme
 	 */
 	public static final String THEME_REQUEST_ATTRIBUTE_NAME = CookieThemeResolver.class.getName() + ".THEME";
 
 	/**
 	 * The default name of the cookie that holds the theme name.
+	 *
+	 * 默认 cookie 名称
 	 */
 	public static final String DEFAULT_COOKIE_NAME = CookieThemeResolver.class.getName() + ".THEME";
 
@@ -72,6 +80,8 @@ public class CookieThemeResolver extends CookieGenerator implements ThemeResolve
 
 	/**
 	 * Set the name of the default theme.
+	 *
+	 * 设置默认主题
 	 */
 	public void setDefaultThemeName(String defaultThemeName) {
 		this.defaultThemeName = defaultThemeName;
@@ -79,6 +89,8 @@ public class CookieThemeResolver extends CookieGenerator implements ThemeResolve
 
 	/**
 	 * Return the name of the default theme.
+	 *
+	 * 获取默认主题
 	 */
 	public String getDefaultThemeName() {
 		return this.defaultThemeName;

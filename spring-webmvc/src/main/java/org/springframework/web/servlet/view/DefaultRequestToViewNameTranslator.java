@@ -16,14 +16,14 @@
 
 package org.springframework.web.servlet.view;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.RequestToViewNameTranslator;
 import org.springframework.web.util.UrlPathHelper;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * {@link RequestToViewNameTranslator} that simply transforms the URI of
@@ -56,22 +56,38 @@ import org.springframework.web.util.UrlPathHelper;
  * @see org.springframework.web.servlet.ViewResolver
  */
 public class DefaultRequestToViewNameTranslator implements RequestToViewNameTranslator {
-
+	/**
+	 * 默认分隔符
+	 */
 	private static final String SLASH = "/";
 
-
+	/**
+	 * 前缀
+	 */
 	private String prefix = "";
-
+	/**
+	 * 后缀
+	 */
 	private String suffix = "";
-
+	/**
+	 * 分隔符
+	 */
 	private String separator = SLASH;
-
+	/**
+	 * 是否移除开头
+	 */
 	private boolean stripLeadingSlash = true;
-
+	/**
+	 * 是否异常末尾
+	 */
 	private boolean stripTrailingSlash = true;
-
+	/**
+	 * 是否移除扩展名
+	 */
 	private boolean stripExtension = true;
-
+	/**
+	 * URL 路径工具类
+	 */
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
 
@@ -168,7 +184,9 @@ public class DefaultRequestToViewNameTranslator implements RequestToViewNameTran
 	 */
 	@Override
 	public String getViewName(HttpServletRequest request) {
+		// 获得请求路径
 		String lookupPath = this.urlPathHelper.getLookupPathForRequest(request, HandlerMapping.LOOKUP_PATH);
+		// 获得视图名
 		return (this.prefix + transformPath(lookupPath) + this.suffix);
 	}
 
@@ -182,16 +200,22 @@ public class DefaultRequestToViewNameTranslator implements RequestToViewNameTran
 	 */
 	@Nullable
 	protected String transformPath(String lookupPath) {
+		// 获取路径
 		String path = lookupPath;
+		// 如果是以 "/" 开头
 		if (this.stripLeadingSlash && path.startsWith(SLASH)) {
+			// 截取
 			path = path.substring(1);
 		}
+		// 移除末尾的 "/"
 		if (this.stripTrailingSlash && path.endsWith(SLASH)) {
 			path = path.substring(0, path.length() - 1);
 		}
+		// 移除扩展名
 		if (this.stripExtension) {
 			path = StringUtils.stripFilenameExtension(path);
 		}
+		// 替换分隔符
 		if (!SLASH.equals(this.separator)) {
 			path = StringUtils.replace(path, SLASH, this.separator);
 		}

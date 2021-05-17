@@ -16,34 +16,39 @@
 
 package org.springframework.web.servlet.theme;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * {@link org.springframework.web.servlet.ThemeResolver} implementation that
  * uses a theme attribute in the user's session in case of a custom setting,
  * with a fallback to the default theme. This is most appropriate if the
  * application needs user sessions anyway.
+ * <p>
+ * ThemeResolver 实现使用一个主题属性在用户自定义的 session
  *
  * <p>Custom controllers can override the user's theme by calling
  * {@code setThemeName}, e.g. responding to a theme change request.
  *
  * @author Jean-Pierre Pawlak
  * @author Juergen Hoeller
- * @since 17.06.2003
  * @see #setThemeName
+ * @since 17.06.2003
  */
 public class SessionThemeResolver extends AbstractThemeResolver {
 
 	/**
 	 * Name of the session attribute that holds the theme name.
 	 * Only used internally by this implementation.
+	 * <p>
+	 * 包含主题的 session 主题的名称
 	 * Use {@code RequestContext(Utils).getTheme()}
 	 * to retrieve the current theme in controllers or views.
+	 *
 	 * @see org.springframework.web.servlet.support.RequestContext#getTheme
 	 * @see org.springframework.web.servlet.support.RequestContextUtils#getTheme
 	 */
@@ -51,6 +56,9 @@ public class SessionThemeResolver extends AbstractThemeResolver {
 
 
 	@Override
+	/**
+	 *  解析主题名称
+	 */
 	public String resolveThemeName(HttpServletRequest request) {
 		String themeName = (String) WebUtils.getSessionAttribute(request, THEME_SESSION_ATTRIBUTE_NAME);
 		// A specific theme indicated, or do we need to fallback to the default?
@@ -58,6 +66,9 @@ public class SessionThemeResolver extends AbstractThemeResolver {
 	}
 
 	@Override
+	/**
+	 * 设置主题名称
+	 */
 	public void setThemeName(
 			HttpServletRequest request, @Nullable HttpServletResponse response, @Nullable String themeName) {
 

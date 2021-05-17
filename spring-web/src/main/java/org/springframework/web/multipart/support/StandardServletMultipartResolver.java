@@ -16,15 +16,14 @@
 
 package org.springframework.web.multipart.support;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartResolver;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 
 /**
  * Standard implementation of the {@link MultipartResolver} interface,
@@ -59,13 +58,17 @@ import org.springframework.web.multipart.MultipartResolver;
  * @see org.springframework.web.multipart.commons.CommonsMultipartResolver
  */
 public class StandardServletMultipartResolver implements MultipartResolver {
-
+	/**
+	 * 是否延迟解析
+	 */
 	private boolean resolveLazily = false;
 
 
 	/**
 	 * Set whether to resolve the multipart request lazily at the time of
 	 * file or parameter access.
+	 *
+	 * 设置是否解析这个 multipart 请求懒加载多次 文件或者参数
 	 * <p>Default is "false", resolving the multipart elements immediately, throwing
 	 * corresponding exceptions at the time of the {@link #resolveMultipart} call.
 	 * Switch this to "true" for lazy multipart parsing, throwing parse exceptions
@@ -77,11 +80,15 @@ public class StandardServletMultipartResolver implements MultipartResolver {
 	}
 
 
+	/**
+	 * 是否是文件类型
+	 */
 	@Override
 	public boolean isMultipart(HttpServletRequest request) {
 		return StringUtils.startsWithIgnoreCase(request.getContentType(), "multipart/");
 	}
 
+	// 解析文件类型
 	@Override
 	public MultipartHttpServletRequest resolveMultipart(HttpServletRequest request) throws MultipartException {
 		return new StandardMultipartHttpServletRequest(request, this.resolveLazily);
@@ -89,11 +96,13 @@ public class StandardServletMultipartResolver implements MultipartResolver {
 
 	@Override
 	public void cleanupMultipart(MultipartHttpServletRequest request) {
+		// 如果请求是 AbstractMultipartHttpServletRequest 被解析的
 		if (!(request instanceof AbstractMultipartHttpServletRequest) ||
 				((AbstractMultipartHttpServletRequest) request).isResolved()) {
 			// To be on the safe side: explicitly delete the parts,
 			// but only actual file parts (for Resin compatibility)
 			try {
+				// 删除临时的 Part 们
 				for (Part part : request.getParts()) {
 					if (request.getFile(part.getName()) != null) {
 						part.delete();
